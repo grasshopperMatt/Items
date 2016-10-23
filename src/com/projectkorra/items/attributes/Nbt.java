@@ -21,56 +21,33 @@ import com.projectkorra.items.attributes.util.Wrapper;
 import com.projectkorra.projectkorra.util.ReflectionHandler;
 
 public class Nbt {
-	private static final BiMap<Integer, Class<?>> NBT_CLASS = HashBiMap.create();
-	private static final BiMap<Integer, NbtType> NBT_ENUM = HashBiMap.create();
 	
-	public enum NbtType {
-		TAG_END(0, Void.class), TAG_BYTE(1, byte.class), TAG_SHORT(2, short.class), TAG_INT(3, int.class), 
-		TAG_LONG(4, long.class), TAG_FLOAT(5, float.class), TAG_DOUBLE(6, double.class), TAG_BYTE_ARRAY(7,byte[].class), 
-		TAG_STRING(8, String.class), TAG_LIST(9, List.class), TAG_COMPOUND(10, Map.class), TAG_INT_ARRAY(11, int[].class);
-
-		public final int id;
-
-		private NbtType(int uniqueId, Class<?> type) {
-			id = uniqueId;
-			
-			NBT_CLASS.put(id, type);
-			NBT_ENUM.put(id, this);
-		}
-
-		private String getFieldName() {
-
-			if (this == TAG_COMPOUND) {
-				return "map";
-			} else if (this == TAG_LIST) {
-				return "list";
-			} else {
-				return "data";
-			}
-		}
-	}
-
+	public BiMap<Integer, Class<?>> NBT_CLASS = HashBiMap.create();
+	public BiMap<Integer, NbtType> NBT_ENUM = HashBiMap.create();
+	
+	//
+	
 	public Class<?> BASE_CLASS;
 	public Class<?> COMPOUND_CLASS;
 	public Method NBT_CREATE_TAG;
 	public Method NBT_GET_TYPE;
 	public Field NBT_LIST_TYPE;
-	public final Field[] DATA_FIELD = new Field[12];
+	
+	//
 
 	private Class<?> CRAFT_STACK;
 	private Field CRAFT_HANDLE;
 	private Field STACK_TAG;
+	
+	//
 
 	public Method LOAD_COMPOUND;
 	public Method SAVE_COMPOUND;
 	
+	//
+	
 	private static Nbt INSTANCE;
 	
-	public static Nbt get() {
-		if (INSTANCE == null)
-			INSTANCE = new Nbt();
-		return INSTANCE;
-	}
 
 	private Nbt() {
 		if (BASE_CLASS == null) {
@@ -79,7 +56,6 @@ public class Nbt {
 				ClassLoader loader = Nbt.class.getClassLoader();
 				String packageName = Bukkit.getServer().getClass().getPackage().getName();
 				Class<?> offlinePlayer = loader.loadClass(packageName + ".CraftOfflinePlayer");
-				
 
 				COMPOUND_CLASS = ReflectionHandler.getMethod(offlinePlayer, "getData").getReturnType();
 				BASE_CLASS = COMPOUND_CLASS.getSuperclass();
@@ -101,6 +77,13 @@ public class Nbt {
 			}
 		}
 	}
+	
+	public static Nbt get() {
+		if (INSTANCE == null)
+			INSTANCE = new Nbt();
+		return INSTANCE;
+	}
+	
 
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> getDataMap(Object handle) {
@@ -431,8 +414,11 @@ public class Nbt {
 	public NbtType getPrimitiveType(Object primitive) {
 		NbtType type = NBT_ENUM.get(NBT_CLASS.inverse().get(Primitives.unwrap(primitive.getClass())));
 
-		if (type == null)
+		if (type == null) {
 			throw new IllegalArgumentException(String.format("Illegal type: %s (%s)", primitive.getClass(), primitive));
+		}
+		
 		return type;
 	}
+	
 }
