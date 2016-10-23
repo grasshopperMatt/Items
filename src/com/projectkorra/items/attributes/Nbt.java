@@ -23,9 +23,7 @@ import com.projectkorra.projectkorra.util.ReflectionHandler;
 public class Nbt {
 	private static final BiMap<Integer, Class<?>> NBT_CLASS = HashBiMap.create();
 	private static final BiMap<Integer, NbtType> NBT_ENUM = HashBiMap.create();
-
-	private static Nbt INSTANCE;
-
+	
 	public enum NbtType {
 		TAG_END(0, Void.class), TAG_BYTE(1, byte.class), TAG_SHORT(2, short.class), TAG_INT(3, int.class), 
 		TAG_LONG(4, long.class), TAG_FLOAT(5, float.class), TAG_DOUBLE(6, double.class), TAG_BYTE_ARRAY(7,byte[].class), 
@@ -65,7 +63,9 @@ public class Nbt {
 
 	public Method LOAD_COMPOUND;
 	public Method SAVE_COMPOUND;
-
+	
+	private static Nbt INSTANCE;
+	
 	public static Nbt get() {
 		if (INSTANCE == null)
 			INSTANCE = new Nbt();
@@ -75,10 +75,11 @@ public class Nbt {
 	private Nbt() {
 		if (BASE_CLASS == null) {
 			try {
-
+				
 				ClassLoader loader = Nbt.class.getClassLoader();
 				String packageName = Bukkit.getServer().getClass().getPackage().getName();
 				Class<?> offlinePlayer = loader.loadClass(packageName + ".CraftOfflinePlayer");
+				
 
 				COMPOUND_CLASS = ReflectionHandler.getMethod(offlinePlayer, "getData").getReturnType();
 				BASE_CLASS = COMPOUND_CLASS.getSuperclass();
@@ -91,8 +92,10 @@ public class Nbt {
 
 				LOAD_COMPOUND = ReflectionHandler.getMethod(BASE_CLASS, null, DataInput.class);
 				LOAD_COMPOUND = ReflectionHandler.getMethod(BASE_CLASS, null, BASE_CLASS, DataOutput.class);
+				
 			} catch (NoSuchMethodException | NoSuchFieldException | SecurityException
 					| ClassNotFoundException exception) {
+				
 				exception.printStackTrace();
 
 			}
@@ -206,15 +209,16 @@ public class Nbt {
 	 * @throws IllegalArgumentException
 	 *             If the stack is not a CraftItemStack, or it represents air.
 	 */
+	
 	public static void setTag(ItemStack stack, NbtCompound compound) {
 		checkItemStack(stack);
 		Object nms = null;
 
 		try {
+			
 			nms = ReflectionHandler.getValue(stack, true, get().CRAFT_HANDLE.getName());
-
 			ReflectionHandler.setValue(compound.getHandle(), true, get().STACK_TAG.getName(), nms);
-
+			
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
 				| SecurityException exception) {
 
@@ -233,23 +237,19 @@ public class Nbt {
 	 *            - the item stack.
 	 * @return A wrapper for its NBT tag.
 	 */
+	
 	public static NbtCompound fromTag(ItemStack stack) {
 		checkItemStack(stack);
 		Object nms, tag = null;
 
 		try {
-			nms = ReflectionHandler.getValue(stack,
-					true,
-					get().CRAFT_HANDLE.getName()
-					);
 			
-			tag = ReflectionHandler.getValue(nms,
-					true,
-					get().STACK_TAG.getName()
-					);
+			nms = ReflectionHandler.getValue(stack, true, get().CRAFT_HANDLE.getName());
+			tag = ReflectionHandler.getValue(nms, true, get().STACK_TAG.getName());
 
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
 				| SecurityException exception) {
+			
 			exception.printStackTrace();
 		}
 
@@ -344,16 +344,16 @@ public class Nbt {
 		}
 
 		if (BASE_CLASS.isAssignableFrom(nms.getClass())) {
+			
 			final NbtType type = getType(nms);
-
 			switch (type) {
 
 			case TAG_COMPOUND:
-
 				return new NbtCompound(nms);
+				
 			case TAG_LIST:
-
 				return new NbtList(nms);
+				
 			default:
 				try {
 					return ReflectionHandler.getValue(nms, true, type.getFieldName());
@@ -365,7 +365,7 @@ public class Nbt {
 				}
 			}
 		}
-
+		
 		throw new IllegalArgumentException("Unexpected type: " + nms);
 	}
 
@@ -386,42 +386,16 @@ public class Nbt {
 
 		try {
 			tag = ReflectionHandler.invokeMethod(null, NBT_CREATE_TAG.getName(), (byte) type.id, name);
-
+			
 			if (value != null) {
-				ReflectionHandler.setValue(tag, true,
-						ReflectionHandler.getField(null, true, type.getFieldName()).getName(), value);
-
-			}
+				ReflectionHandler.setValue(tag, true, ReflectionHandler.getField(null, true, type.getFieldName()).getName(), value);
+			}			
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
 				| NoSuchFieldException | SecurityException exception) {
 
 			exception.printStackTrace();
 		}
 		return tag;
-	}
-
-	/**
-	 * Retrieve the field where the NBT class stores its value.
-	 * 
-	 * @param type
-	 *            - the NBT type.
-	 * @param nms
-	 *            - the NBT class instance.
-	 * @return The corresponding field.
-	 */
-
-	public Field getDataField(NbtType type, Object nms) {
-		if (DATA_FIELD[type.id] == null) {
-			try {
-				DATA_FIELD[type.id] = ReflectionHandler.getField(nms.getClass(), true, type.getFieldName());
-
-			} catch (NoSuchFieldException | SecurityException exception) {
-
-				exception.printStackTrace();
-			}
-		}
-
-		return DATA_FIELD[type.id];
 	}
 
 	/**
@@ -457,7 +431,6 @@ public class Nbt {
 	public NbtType getPrimitiveType(Object primitive) {
 		NbtType type = NBT_ENUM.get(NBT_CLASS.inverse().get(Primitives.unwrap(primitive.getClass())));
 
-		// Display the illegal value at least
 		if (type == null)
 			throw new IllegalArgumentException(String.format("Illegal type: %s (%s)", primitive.getClass(), primitive));
 		return type;

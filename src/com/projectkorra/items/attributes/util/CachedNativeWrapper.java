@@ -9,16 +9,18 @@ public final class CachedNativeWrapper {
 	private final ConcurrentMap<Object, Object> cache = new MapMaker()
 			.weakKeys()
 			.makeMap();
-
+	
+	public CachedNativeWrapper() {
+		
+	}
+	
 	public Object wrap(Object value) {
 		Object current = cache.get(value);
 
 		if (current == null) {
-
+			
 			current = Nbt.get().wrapNative(value);
-
 			if (current instanceof ConvertedMap || current instanceof ConvertedList) {
-
 				cache.put(value, current);
 			}
 		}

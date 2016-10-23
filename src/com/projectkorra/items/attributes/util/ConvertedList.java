@@ -26,6 +26,7 @@ public class ConvertedList extends AbstractList<Object> implements Wrapper {
 				nbt.NBT_LIST_TYPE = ReflectionHandler.getField(handle.getClass(), true, "type");
 				
 			} catch (NoSuchFieldException | SecurityException exception) {
+				
 				exception.printStackTrace();
 			}
 		}
