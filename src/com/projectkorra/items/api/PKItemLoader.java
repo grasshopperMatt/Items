@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.inventory.ItemStack;
@@ -20,9 +21,9 @@ public class PKItemLoader {
 	public File directory;
 	private File[] files;
 
-	public PKItemLoader(File directory) {
-		this.directory = directory;
-		this.files = directory.listFiles();
+	public PKItemLoader(File file) {
+		directory = file;
+		files = directory.listFiles();
 		
 		load();
 	}
@@ -37,16 +38,18 @@ public class PKItemLoader {
 			}
 
 		} catch (IOException | ParseException exception) {
+			
 			exception.printStackTrace();
 		}
 		
 		for (JSONObject object : objects) {
 			ItemStack item = ProjectKorraItems.getInstance().createItemStack(object);
-			ProjectKorraItems.loadedItems.add(item);
 			
 			try {
+				HashMap<Object, Object> values = ProjectKorraItems.getInstance().itemReader.values(item);
+				String name = (String)values.get("name");
 				
-				ProjectKorraItems.itemData.put(item, ProjectKorraItems.getInstance().itemReader.values(item));
+				ProjectKorraItems.getInstance().itemManager.itemData.put(name, values);
 				
 			} catch (ParseException exception) {
 				

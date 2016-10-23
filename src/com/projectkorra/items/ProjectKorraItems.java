@@ -1,9 +1,6 @@
 package com.projectkorra.items;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,14 +14,13 @@ import com.projectkorra.items.api.PKItemLoader;
 public class ProjectKorraItems extends JavaPlugin {
 	
 	private static ProjectKorraItems instance;
-	public static List<ItemStack> loadedItems = new ArrayList<ItemStack>();
-	public static HashMap<String, HashMap<Object, Object>> abilityData = new HashMap<String, HashMap<Object, Object>>();
-	public static HashMap<ItemStack, HashMap<Object, Object>> itemData = new HashMap<ItemStack, HashMap<Object, Object>>();
 	
 	
+	public PKItemManager itemManager;
 	public PKItemWriter itemWriter;
 	public PKItemReader itemReader;
 	public PKItemLoader itemLoader;
+	
 	
 	@Override
 	public void onEnable() {
@@ -36,6 +32,7 @@ public class ProjectKorraItems extends JavaPlugin {
 			
 		}
 		
+		itemManager = new PKItemManager();
 		itemReader = new PKItemReader();
 		itemWriter = new PKItemWriter();
 		itemLoader = new PKItemLoader(new File(this.getDataFolder() + "/extensions"));
