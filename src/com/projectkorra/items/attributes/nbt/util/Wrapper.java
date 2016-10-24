@@ -1,4 +1,4 @@
-package com.projectkorra.items.attributes.util;
+package com.projectkorra.items.attributes.nbt.util;
 
 public interface Wrapper {
 

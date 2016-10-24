@@ -16,7 +16,6 @@ public class ProjectKorraItems extends JavaPlugin {
 	private static ProjectKorraItems instance;
 	
 	
-	public PKItemManager itemManager;
 	public PKItemWriter itemWriter;
 	public PKItemReader itemReader;
 	public PKItemLoader itemLoader;
@@ -32,7 +31,6 @@ public class ProjectKorraItems extends JavaPlugin {
 			
 		}
 		
-		itemManager = new PKItemManager();
 		itemReader = new PKItemReader();
 		itemWriter = new PKItemWriter();
 		itemLoader = new PKItemLoader(new File(this.getDataFolder() + "/extensions"));

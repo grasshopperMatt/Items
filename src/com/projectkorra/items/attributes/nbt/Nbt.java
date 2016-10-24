@@ -1,4 +1,4 @@
-package com.projectkorra.items.attributes;
+package com.projectkorra.items.attributes.nbt;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -17,15 +17,53 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.primitives.Primitives;
-import com.projectkorra.items.attributes.util.Wrapper;
+import com.projectkorra.items.attributes.nbt.util.Wrapper;
 import com.projectkorra.projectkorra.util.ReflectionHandler;
 
 public class Nbt {
 	
+	public enum NbtType {
+		
+		TAG_END(0, Void.class), TAG_BYTE(1, byte.class), TAG_SHORT(2, short.class), TAG_INT(3, int.class), 
+		TAG_LONG(4, long.class), TAG_FLOAT(5, float.class), TAG_DOUBLE(6, double.class), TAG_BYTE_ARRAY(7,byte[].class), 
+		TAG_STRING(8, String.class), TAG_LIST(9, List.class), TAG_COMPOUND(10, Map.class), TAG_INT_ARRAY(11, int[].class);
+		
+		
+		private final int id;
+		private Nbt nbt;
+		
+
+		private NbtType(int uniqueId, Class<?> type) {
+			id = uniqueId;
+			
+			nbt = Nbt.getInstance();
+			nbt.NBT_CLASS.put(id, type);
+			nbt.NBT_ENUM.put(id, this);
+		}
+		
+
+		public String getFieldName() {
+
+			if (this == TAG_COMPOUND) {
+				return "map";
+			} else if (this == TAG_LIST) {
+				return "list";
+			} else {
+				return "data";	
+			}	
+		}
+		
+		
+		public int getId() {
+			return id;
+		}
+	}
+	
+	
+	private static Nbt INSTANCE;
+	
 	public BiMap<Integer, Class<?>> NBT_CLASS = HashBiMap.create();
 	public BiMap<Integer, NbtType> NBT_ENUM = HashBiMap.create();
-	
-	//
 	
 	public Class<?> BASE_CLASS;
 	public Class<?> COMPOUND_CLASS;
@@ -33,30 +71,24 @@ public class Nbt {
 	public Method NBT_GET_TYPE;
 	public Field NBT_LIST_TYPE;
 	
-	//
-
 	private Class<?> CRAFT_STACK;
 	private Field CRAFT_HANDLE;
 	private Field STACK_TAG;
 	
-	//
-
 	public Method LOAD_COMPOUND;
 	public Method SAVE_COMPOUND;
-	
-	//
-	
-	private static Nbt INSTANCE;
 	
 
 	private Nbt() {
 		if (BASE_CLASS == null) {
+			
+			ClassLoader loader = Nbt.class.getClassLoader();
+			String packageName = Bukkit.getServer().getClass().getPackage().getName();
+			
 			try {
 				
-				ClassLoader loader = Nbt.class.getClassLoader();
-				String packageName = Bukkit.getServer().getClass().getPackage().getName();
 				Class<?> offlinePlayer = loader.loadClass(packageName + ".CraftOfflinePlayer");
-
+				
 				COMPOUND_CLASS = ReflectionHandler.getMethod(offlinePlayer, "getData").getReturnType();
 				BASE_CLASS = COMPOUND_CLASS.getSuperclass();
 				NBT_GET_TYPE = ReflectionHandler.getMethod(BASE_CLASS, "getTypeId");
@@ -69,16 +101,13 @@ public class Nbt {
 				LOAD_COMPOUND = ReflectionHandler.getMethod(BASE_CLASS, null, DataInput.class);
 				LOAD_COMPOUND = ReflectionHandler.getMethod(BASE_CLASS, null, BASE_CLASS, DataOutput.class);
 				
-			} catch (NoSuchMethodException | NoSuchFieldException | SecurityException
-					| ClassNotFoundException exception) {
-				
+			} catch (NoSuchMethodException | NoSuchFieldException | SecurityException | ClassNotFoundException exception) {
 				exception.printStackTrace();
-
 			}
 		}
 	}
 	
-	public static Nbt get() {
+	public static Nbt getInstance() {
 		if (INSTANCE == null)
 			INSTANCE = new Nbt();
 		return INSTANCE;
@@ -88,25 +117,24 @@ public class Nbt {
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> getDataMap(Object handle) {
 		try {
+			
 			return (Map<String, Object>) ReflectionHandler.getValue(handle, true, NbtType.TAG_COMPOUND.getFieldName());
-
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
 				| SecurityException exception) {
-
 			exception.printStackTrace();
 		}
 
 		return null;
 	}
+	
 
 	@SuppressWarnings("unchecked")
 	public List<Object> getDataList(Object handle) {
 		try {
+			
 			return (List<Object>) ReflectionHandler.getValue(handle, true, NbtType.TAG_LIST.getFieldName());
-
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
 				| SecurityException exception) {
-
 			exception.printStackTrace();
 		}
 
@@ -122,12 +150,14 @@ public class Nbt {
     public static NbtList createList(Object... content) {
         return createList(Arrays.asList(content));
     }
+    
 
 	public static NbtList createList(Iterable<? extends Object> iterable) {
 		NbtList list = new NbtList(INSTANCE.createTag(NbtType.TAG_LIST, "", null));
 
-		for (Object obj : iterable)
-			list.add(obj);
+		for (Object object : iterable)
+			list.add(object);
+		
 		return list;
 	}
 
@@ -140,8 +170,9 @@ public class Nbt {
 	 *            - the name of the compound.
 	 * @return The NBT compound.
 	 */
+	
 	public static NbtCompound createRootCompound(String name) {
-		return new NbtCompound(get().createTag(NbtType.TAG_COMPOUND, name, null));
+		return new NbtCompound(getInstance().createTag(NbtType.TAG_COMPOUND, name, null));
 	}
 	
 	/**
@@ -153,7 +184,7 @@ public class Nbt {
 	 */
 	
 	public static NbtCompound createCompound() {
-		return new NbtCompound(get().createTag(NbtType.TAG_COMPOUND, "", null));
+		return new NbtCompound(getInstance().createTag(NbtType.TAG_COMPOUND, "", null));
 	}
 
 	/**
@@ -175,6 +206,7 @@ public class Nbt {
 	 *            - the NBT compund.
 	 * @return The wrapper.
 	 */
+	
 	public static NbtCompound fromCompound(Object nmsCompound) {
 		return new NbtCompound(nmsCompound);
 	}
@@ -197,14 +229,11 @@ public class Nbt {
 		checkItemStack(stack);
 		Object nms = null;
 
-		try {
-			
-			nms = ReflectionHandler.getValue(stack, true, get().CRAFT_HANDLE.getName());
-			ReflectionHandler.setValue(compound.getHandle(), true, get().STACK_TAG.getName(), nms);
-			
+		try {			
+			nms = ReflectionHandler.getValue(stack, true, getInstance().CRAFT_HANDLE.getName());
+			ReflectionHandler.setValue(compound.getHandle(), true, getInstance().STACK_TAG.getName(), nms);
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
 				| SecurityException exception) {
-
 			exception.printStackTrace();
 		}
 	}
@@ -226,24 +255,19 @@ public class Nbt {
 		Object nms, tag = null;
 
 		try {
-			
-			nms = ReflectionHandler.getValue(stack, true, get().CRAFT_HANDLE.getName());
-			tag = ReflectionHandler.getValue(nms, true, get().STACK_TAG.getName());
-
-		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
-				| SecurityException exception) {
-			
+			nms = ReflectionHandler.getValue(stack, true, getInstance().CRAFT_HANDLE.getName());
+			tag = ReflectionHandler.getValue(nms, true, getInstance().STACK_TAG.getName());
+		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException exception) {
 			exception.printStackTrace();
 		}
 
 		if (tag == null) {
-
 			NbtCompound compound = createRootCompound("tag");
 			setTag(stack, compound);
-
+			
 			return compound;
 		}
-
+		
 		return fromCompound(tag);
 	}
 
@@ -254,14 +278,19 @@ public class Nbt {
 	 *            - the stack to convert.
 	 * @return The CraftItemStack version.
 	 */
+	
 	public static ItemStack getCraftItemStack(ItemStack stack) {
-		if (stack == null || get().CRAFT_STACK.isAssignableFrom(stack.getClass()))
+		if (stack == null || getInstance().CRAFT_STACK.isAssignableFrom(stack.getClass())) {
 			return stack;
+		}
+		
 		try {
 			Constructor<?> caller = INSTANCE.CRAFT_STACK.getDeclaredConstructor(ItemStack.class);
 			caller.setAccessible(true);
+			
 			return (ItemStack) caller.newInstance(stack);
 		} catch (Exception e) {
+			
 			throw new IllegalStateException("Unable to convert " + stack + " + to a CraftItemStack.");
 		}
 	}
@@ -272,13 +301,19 @@ public class Nbt {
 	 * @param stack
 	 *            - the stack to check.
 	 */
+	
 	private static void checkItemStack(ItemStack stack) {
-		if (stack == null)
+		if (stack == null) {
 			throw new IllegalArgumentException("Stack cannot be NULL.");
-		if (!get().CRAFT_STACK.isAssignableFrom(stack.getClass()))
+		}
+		
+		if (!getInstance().CRAFT_STACK.isAssignableFrom(stack.getClass())) {
 			throw new IllegalArgumentException("Stack must be a CraftItemStack.");
-		if (stack.getType() == Material.AIR)
+		}
+		
+		if (stack.getType() == Material.AIR) {
 			throw new IllegalArgumentException("ItemStacks representing air cannot store NMS information.");
+		}
 	}
 
 	/**
@@ -291,19 +326,24 @@ public class Nbt {
 	 *            - the value of the element to create. Can be a List or a Map.
 	 * @return The NBT element.
 	 */
+	
 	public Object unwrapValue(String name, Object value) {
-		if (value == null)
+		
+		if (value == null) {
 			return null;
+		}
 
 		if (value instanceof Wrapper) {
+			
 			return ((Wrapper) value).getHandle();
-
 		} else if (value instanceof List) {
+			
 			throw new IllegalArgumentException("Can only insert a WrappedList.");
 		} else if (value instanceof Map) {
+			
 			throw new IllegalArgumentException("Can only insert a WrappedCompound.");
-
 		} else {
+			
 			return createTag(getPrimitiveType(value), name, value);
 		}
 	}
@@ -325,31 +365,30 @@ public class Nbt {
 		if (nms == null) {
 			return null;
 		}
-
+		
 		if (BASE_CLASS.isAssignableFrom(nms.getClass())) {
 			
 			final NbtType type = getType(nms);
 			switch (type) {
 
 			case TAG_COMPOUND:
+				
 				return new NbtCompound(nms);
-				
 			case TAG_LIST:
-				return new NbtList(nms);
 				
+				return new NbtList(nms);
 			default:
 				try {
+					
 					return ReflectionHandler.getValue(nms, true, type.getFieldName());
-
 				} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
 						| SecurityException exception) {
-
 					exception.printStackTrace();
 				}
 			}
 		}
 		
-		throw new IllegalArgumentException("Unexpected type: " + nms);
+		return null;
 	}
 
 	/**
@@ -368,8 +407,7 @@ public class Nbt {
 		Object tag = null;
 
 		try {
-			tag = ReflectionHandler.invokeMethod(null, NBT_CREATE_TAG.getName(), (byte) type.id, name);
-			
+			tag = ReflectionHandler.invokeMethod(null, NBT_CREATE_TAG.getName(), (byte) type.id, name);	
 			if (value != null) {
 				ReflectionHandler.setValue(tag, true, ReflectionHandler.getField(null, true, type.getFieldName()).getName(), value);
 			}			
@@ -378,6 +416,7 @@ public class Nbt {
 
 			exception.printStackTrace();
 		}
+		
 		return tag;
 	}
 
@@ -420,5 +459,4 @@ public class Nbt {
 		
 		return type;
 	}
-	
 }

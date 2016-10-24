@@ -47,9 +47,10 @@ public class PKItemLoader {
 			
 			try {
 				HashMap<Object, Object> values = ProjectKorraItems.getInstance().itemReader.values(item);
+				@SuppressWarnings("unused")
 				String name = (String)values.get("name");
 				
-				ProjectKorraItems.getInstance().itemManager.itemData.put(name, values);
+				//ProjectKorraItems.getInstance().itemManager.itemData.put(name, values);
 				
 			} catch (ParseException exception) {
 				

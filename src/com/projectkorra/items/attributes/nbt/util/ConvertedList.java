@@ -1,25 +1,23 @@
-package com.projectkorra.items.attributes.util;
+package com.projectkorra.items.attributes.nbt.util;
 
 import java.util.AbstractList;
 import java.util.List;
 
-import com.projectkorra.items.attributes.Nbt;
+import com.projectkorra.items.attributes.nbt.Nbt;
 import com.projectkorra.projectkorra.util.ReflectionHandler;
 
 public class ConvertedList extends AbstractList<Object> implements Wrapper {
+	
 	private final Object handle;
 	private final List<Object> original;
-	private final CachedNativeWrapper cache;
+	private final CachedNativeWrapper cache = new CachedNativeWrapper();
+	private Nbt nbt = Nbt.getInstance();
 	
-	private Nbt nbt;
 
-	public ConvertedList(Object nmsHandle, List<Object> originalData) {
-		nbt = Nbt.get();
+	public ConvertedList(Object handle, List<Object> original) {
+		this.handle = handle;
+		this.original = original;
 		
-		handle = nmsHandle;
-		original = originalData;
-		cache = new CachedNativeWrapper();
-
 		if (nbt.NBT_LIST_TYPE == null) {
 			try {
 				
@@ -30,8 +28,14 @@ public class ConvertedList extends AbstractList<Object> implements Wrapper {
 				exception.printStackTrace();
 			}
 		}
-		
 	}
+	
+	
+	@Override
+	public Object getHandle() {
+		return handle;
+	}
+	
 	
 	protected Object wrapOutgoing(Object value) {
 		return cache.wrap(value);
@@ -39,13 +43,7 @@ public class ConvertedList extends AbstractList<Object> implements Wrapper {
 	
 
 	protected Object unwrapIncoming(Object wrapped) {
-		return Nbt.get().unwrapValue("", wrapped);
-	}
-	
-	
-	@Override
-	public Object getHandle() {
-		return handle;
+		return cache.unwrap("", wrapped);
 	}
 	
 	
@@ -61,15 +59,18 @@ public class ConvertedList extends AbstractList<Object> implements Wrapper {
 
 		if (size() == 0) {
 			try {
-				ReflectionHandler.setValue(handle, true, Nbt.get().NBT_LIST_TYPE.toString(), Nbt.get().getType(nbt).id);
-
+				
+				ReflectionHandler.setValue(handle, true, Nbt.getInstance().NBT_LIST_TYPE.toString(), Nbt.getInstance().getType(nbt).getId());
+				
 			} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
 					| SecurityException exception) {
+				
 				exception.printStackTrace();
 			}
 		}
 		original.add(index, nbt);
 	}
+	
 	
 	@Override
 	public boolean remove(Object o) {
@@ -87,5 +88,4 @@ public class ConvertedList extends AbstractList<Object> implements Wrapper {
 	public Object get(int index) {
 		return wrapOutgoing(original.get(index));
 	}
-	
 }

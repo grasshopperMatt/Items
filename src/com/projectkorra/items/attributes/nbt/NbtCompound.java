@@ -1,4 +1,4 @@
-package com.projectkorra.items.attributes;
+package com.projectkorra.items.attributes.nbt;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,12 +6,12 @@ import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.projectkorra.items.attributes.util.ConvertedMap;
+import com.projectkorra.items.attributes.nbt.util.ConvertedMap;
 
 public final class NbtCompound extends ConvertedMap {
 
 	public NbtCompound(Object handle) {
-		super(handle, Nbt.get().getDataMap(handle));
+		super(handle, Nbt.getInstance().getDataMap(handle));
 	}
 	
 	
@@ -38,18 +38,16 @@ public final class NbtCompound extends ConvertedMap {
                 if (createNew) {
                     current.put(entry, child = Nbt.createCompound());
                 }    
-            }
-            
+            }    
             current = child;
         }
+        
         return current;
     }
     
     
     private List<String> getPathElements(String path) {
-        return Lists.newArrayList(Splitter.on(".")
-        		.omitEmptyStrings()
-        		.split(path));
+        return Lists.newArrayList(Splitter.on(".").omitEmptyStrings().split(path));
     }
     
     
@@ -63,7 +61,6 @@ public final class NbtCompound extends ConvertedMap {
         }
 
         return null;
-
     }  
     
     
@@ -79,7 +76,6 @@ public final class NbtCompound extends ConvertedMap {
 
 	public Byte getByte(String key, byte defaultValue) {
 		if (containsKey(key)) {
-
 			return (Byte) get(key);
 		}
 
@@ -89,7 +85,6 @@ public final class NbtCompound extends ConvertedMap {
 
 	public Short getShort(String key, short defaultValue) {
 		if (containsKey(key)) {
-
 			return (Short) get(key);
 		}
 
@@ -99,7 +94,6 @@ public final class NbtCompound extends ConvertedMap {
 
 	public Long getLong(String key, long defaultValue) {
 		if (containsKey(key)) {
-
 			return (Long) get(key);
 		}
 
@@ -109,7 +103,6 @@ public final class NbtCompound extends ConvertedMap {
 
 	public Integer getInteger(String key, int defaultValue) {
 		if (containsKey(key)) {
-
 			return (Integer) get(key);
 		}
 
@@ -119,7 +112,6 @@ public final class NbtCompound extends ConvertedMap {
 
 	public Float getFloat(String key, float defaultValue) {
 		if (containsKey(key)) {
-
 			return (Float) get(key);
 		}
 
@@ -129,7 +121,6 @@ public final class NbtCompound extends ConvertedMap {
 
 	public Double getDouble(String key, double defaultValue) {
 		if (containsKey(key)) {
-
 			return (Double) get(key);
 		}
 
@@ -139,7 +130,6 @@ public final class NbtCompound extends ConvertedMap {
 
 	public String getString(String key, String defaultValue) {
 		if (containsKey(key)) {
-
 			return (String) get(key);
 		}
 
@@ -149,7 +139,6 @@ public final class NbtCompound extends ConvertedMap {
 
 	public Byte[] getByteArray(String key, Byte[] defaultValue) {
 		if (containsKey(key)) {
-
 			return (Byte[]) get(key);
 		}
 
@@ -159,10 +148,10 @@ public final class NbtCompound extends ConvertedMap {
 
 	public Integer[] getIntegerArray(String key, Integer[] defaultValue) {
 		if (containsKey(key)) {
-
 			return (Integer[]) get(key);
 		}
 
 		return defaultValue;
 	}
+	
 }
