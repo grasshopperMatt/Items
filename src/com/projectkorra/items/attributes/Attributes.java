@@ -51,15 +51,16 @@ public class Attributes {
     
     
     public boolean remove(Attribute attribute) {
-    	final String uuidString = attribute.getCompound().getString("id", null);
-    	final UUID uuid = UUID.fromString(uuidString);
+    	String uuidString = attribute.getCompound().getString("id", null);
+    	UUID uuid = UUID.fromString(uuidString);
     	
         for (Iterator<Attribute> it = values().iterator(); it.hasNext();) {
             if (Objects.equals(it.next().getCompound().getString("id", null), uuid)) {
                 it.remove();
                 return true;
             }
-        }  
+        } 
+        
         return false;
     }
     
