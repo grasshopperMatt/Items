@@ -38,11 +38,11 @@ public class Attribute {
 	}
 	
     
-    public UUID getId() {
-    	long most = data.getLong("UUIDMost", 0);
-    	long least = data.getLong("UUIDLeast", 0);
-    	return new UUID(most, least);
-    }
+    	public UUID getId() {
+    		long most = data.getLong("UUIDMost", 0);
+    		long least = data.getLong("UUIDLeast", 0);
+    		return new UUID(most, least);
+    	}
 	
 	
 	public Operation getOperation() {
