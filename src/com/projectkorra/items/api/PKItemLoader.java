@@ -17,7 +17,6 @@ import org.json.simple.parser.ParseException;
 import com.projectkorra.items.ProjectKorraItems;
 
 public class PKItemLoader {
-
 	public File directory;
 	private File[] files;
 

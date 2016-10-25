@@ -4,7 +4,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class AttributeType {
-	
 	public static final AttributeType GENERIC_MAX_HEALTH = new AttributeType("generic.maxHealth").register();
 	public static final AttributeType GENERIC_FOLLOW_RANGE = new AttributeType("generic.followRange").register();
 	public static final AttributeType GENERIC_ATTACK_DAMAGE = new AttributeType("generic.attackDamage").register();
