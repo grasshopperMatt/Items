@@ -3,72 +3,46 @@ package com.projectkorra.items.attributes;
 import java.util.UUID;
 
 import com.projectkorra.items.attributes.Attributes.Operation;
-import com.projectkorra.items.attributes.nbt.Nbt;
 import com.projectkorra.items.attributes.nbt.NbtCompound;
 
 public class Attribute {
+	private NbtCompound compound;
+	private AttributeBuilder builder;
 	
-	private NbtCompound data;
 	
-	
-	public Attribute(AttributeBuilder builder, NbtCompound dataCopy) {
-		if (dataCopy == null) {
-			data = Nbt.createCompound();
-		} else {
-			data = dataCopy;
-		}
+	public Attribute(AttributeBuilder builder, NbtCompound compound) {
+		compound.put("name", builder.name);
+		compound.put("id", builder.uuid);
+		compound.put("amount", builder.amount);
+		compound.put("operation", builder.operation);
+		compound.put("type", builder.type);
 		
-		data.put("Amount", builder.amount);
-		data.put("Name", builder.name);
-		data.put("UUIDMost", builder.uuid.getMostSignificantBits());
-		data.put("UUIDLeast", builder.uuid.getLeastSignificantBits());
-		data.put("Operation", builder.operation);
-		data.put("AttributeType", builder.type);
-		
+		this.compound = compound;
+		this.builder = builder;
 	}
 	
 	
-	public double getAmount() {
-		return data.getDouble("Amount", 0);
+	public NbtCompound getCompound() {
+		return compound;
 	}
 	
 	
-	public String getName() {
-		return data.getString("Name", null);
+	public AttributeBuilder getBuilder() {
+		return builder;
 	}
-	
+ 
     
-    public UUID getId() {
-    	long most = data.getLong("UUIDMost", 0);
-    	long least = data.getLong("UUIDLeast", 0);
-    	return new UUID(most, least);
-    }
-	
-	
-	public Operation getOperation() {
-		int id = data.getInteger("Operation", 0);
-		return Operation.fromId(id);
-	}
-	
-	
-	public AttributeType getAttributeType() {
-		String id = data.getString("AttributeType", null);
-		return AttributeType.fromId(id);
-	}
-    
-    
-	public static AttributeBuilder newBuilder() {
+	public AttributeBuilder newBuilder() {
 		return new AttributeBuilder();
 	}
 	
 	
 	public static class AttributeBuilder {
-		
-		public double amount;
-		public Operation operation;
-		public AttributeType type;
-		public String name;
-		public UUID uuid;
+		private double amount;
+		private Operation operation;
+		private AttributeType type;
+		private String name;
+		private UUID uuid;
 		
 		
 		private AttributeBuilder() {

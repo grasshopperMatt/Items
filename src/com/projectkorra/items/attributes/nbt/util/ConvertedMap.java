@@ -7,22 +7,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class ConvertedMap extends AbstractMap<String, Object> implements Wrapper {
-	
+	private final CachedNativeWrapper cache = new CachedNativeWrapper();
 	private final Object handle;
 	private final Map<String, Object> original;
-	private final CachedNativeWrapper cache;
 	
 
 	public ConvertedMap(Object handle, Map<String, Object> original) {
 		this.handle = handle;
 		this.original = original;
-		this.cache = new CachedNativeWrapper();
-	}
-	
-	
-	@Override
-	public Object getHandle() {
-		return handle;
 	}
 	
 
@@ -37,17 +29,10 @@ public class ConvertedMap extends AbstractMap<String, Object> implements Wrapper
 	
 	
 	@Override
-	public Object put(String key, Object value) {
-		return wrapOutgoing(original.put((String) key, unwrapIncoming((String) key, value)));
+	public Object getHandle() {
+		return handle;
 	}
 	
-	
-	@Override
-	public Object remove(Object key) {
-		return wrapOutgoing(original.remove(key));
-	}
-
-
 	
 	@Override
 	public Object get(Object key) {
@@ -60,11 +45,22 @@ public class ConvertedMap extends AbstractMap<String, Object> implements Wrapper
 		return original.containsKey(key);
 	}
 	
+	
+	@Override
+	public Object put(String key, Object value) {
+		return wrapOutgoing(original.put((String) key, unwrapIncoming((String) key, value)));
+	}
+	
+	
+	@Override
+	public Object remove(Object key) {
+		return wrapOutgoing(original.remove(key));
+	}
+	
 
 	@Override
 	public Set<Entry<String, Object>> entrySet() {
 		return new AbstractSet<Entry<String, Object>>() {
-			
 			
 			@Override
 			public boolean add(Entry<String, Object> e) {
@@ -75,12 +71,10 @@ public class ConvertedMap extends AbstractMap<String, Object> implements Wrapper
 				return true;
 			}
 			
-			
 			@Override
 			public int size() {
 				return original.size();
 			}
-			
 			
 			@Override
 			public Iterator<Entry<String, Object>> iterator() {
@@ -91,15 +85,13 @@ public class ConvertedMap extends AbstractMap<String, Object> implements Wrapper
 	}
 	
 	private Iterator<Entry<String, Object>> iterator() {
-		final Iterator<Entry<String, Object>> proxy = original.entrySet().iterator();
+		Iterator<Entry<String, Object>> proxy = original.entrySet().iterator();
 		return new Iterator<Entry<String, Object>>() {
-			
 			
 			@Override
 			public boolean hasNext() {
 				return proxy.hasNext();
 			}
-			
 			
 			@Override
 			public Entry<String, Object> next() {
@@ -107,7 +99,6 @@ public class ConvertedMap extends AbstractMap<String, Object> implements Wrapper
 
 				return new SimpleEntry<String, Object>(entry.getKey(), wrapOutgoing(entry.getValue()));
 			}
-			
 			
 			@Override
 			public void remove() {

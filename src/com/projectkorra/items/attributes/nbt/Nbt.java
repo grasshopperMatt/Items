@@ -343,7 +343,7 @@ public class Nbt {
 			
 			throw new IllegalArgumentException("Can only insert a WrappedCompound.");
 		} else {
-			
+		
 			return createTag(getPrimitiveType(value), name, value);
 		}
 	}
@@ -408,12 +408,12 @@ public class Nbt {
 
 		try {
 			tag = ReflectionHandler.invokeMethod(null, NBT_CREATE_TAG.getName(), (byte) type.id, name);	
+			
 			if (value != null) {
 				ReflectionHandler.setValue(tag, true, ReflectionHandler.getField(null, true, type.getFieldName()).getName(), value);
 			}			
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
 				| NoSuchFieldException | SecurityException exception) {
-
 			exception.printStackTrace();
 		}
 		
@@ -435,7 +435,6 @@ public class Nbt {
 			type = (Integer) ReflectionHandler.invokeMethod(nms, NBT_GET_TYPE.getName());
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException exception) {
-
 			exception.printStackTrace();
 		}
 

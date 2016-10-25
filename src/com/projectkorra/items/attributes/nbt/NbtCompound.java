@@ -15,6 +15,11 @@ public final class NbtCompound extends ConvertedMap {
 	}
 	
 	
+    private List<String> getPathElements(String path) {
+        return Lists.newArrayList(Splitter.on(".").omitEmptyStrings().split(path));
+    }
+    
+    
 	public NbtList getList(String key, boolean createNew) {
 		NbtList list = (NbtList) get(key);
 		if (list == null) {
@@ -43,11 +48,6 @@ public final class NbtCompound extends ConvertedMap {
         }
         
         return current;
-    }
-    
-    
-    private List<String> getPathElements(String path) {
-        return Lists.newArrayList(Splitter.on(".").omitEmptyStrings().split(path));
     }
     
     
@@ -153,5 +153,4 @@ public final class NbtCompound extends ConvertedMap {
 
 		return defaultValue;
 	}
-	
 }

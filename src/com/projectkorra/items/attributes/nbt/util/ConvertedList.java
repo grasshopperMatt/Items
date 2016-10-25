@@ -7,33 +7,21 @@ import com.projectkorra.items.attributes.nbt.Nbt;
 import com.projectkorra.projectkorra.util.ReflectionHandler;
 
 public class ConvertedList extends AbstractList<Object> implements Wrapper {
-	
+	private final CachedNativeWrapper cache = new CachedNativeWrapper();
 	private final Object handle;
 	private final List<Object> original;
-	private final CachedNativeWrapper cache = new CachedNativeWrapper();
-	private Nbt nbt = Nbt.getInstance();
 	
 
 	public ConvertedList(Object handle, List<Object> original) {
-		this.handle = handle;
-		this.original = original;
-		
-		if (nbt.NBT_LIST_TYPE == null) {
+		if (Nbt.getInstance().NBT_LIST_TYPE == null) {
 			try {
-				
-				nbt.NBT_LIST_TYPE = ReflectionHandler.getField(handle.getClass(), true, "type");
-				
+				Nbt.getInstance().NBT_LIST_TYPE = ReflectionHandler.getField(handle.getClass(), true, "type");
 			} catch (NoSuchFieldException | SecurityException exception) {
-				
 				exception.printStackTrace();
 			}
 		}
-	}
-	
-	
-	@Override
-	public Object getHandle() {
-		return handle;
+		this.handle = handle;
+		this.original = original;
 	}
 	
 	
@@ -48,33 +36,14 @@ public class ConvertedList extends AbstractList<Object> implements Wrapper {
 	
 	
 	@Override
+	public Object getHandle() {
+		return handle;
+	}
+	
+	
+	@Override
 	public int size() {
 		return original.size();
-	}
-	
-	
-	@Override
-	public void add(int index, Object element) {
-		Object nbt = unwrapIncoming(element);
-
-		if (size() == 0) {
-			try {
-				
-				ReflectionHandler.setValue(handle, true, Nbt.getInstance().NBT_LIST_TYPE.toString(), Nbt.getInstance().getType(nbt).getId());
-				
-			} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
-					| SecurityException exception) {
-				
-				exception.printStackTrace();
-			}
-		}
-		original.add(index, nbt);
-	}
-	
-	
-	@Override
-	public boolean remove(Object o) {
-		return original.remove(unwrapIncoming(o));
 	}
 	
 
@@ -87,5 +56,27 @@ public class ConvertedList extends AbstractList<Object> implements Wrapper {
 	@Override
 	public Object get(int index) {
 		return wrapOutgoing(original.get(index));
+	}
+	
+	
+	@Override
+	public boolean remove(Object o) {
+		return original.remove(unwrapIncoming(o));
+	}
+	
+	
+	@Override
+	public void add(int index, Object element) {
+		Object nbt = unwrapIncoming(element);
+		
+		if (size() == 0) {
+			try {
+				ReflectionHandler.setValue(handle, true, Nbt.getInstance().NBT_LIST_TYPE.toString(), Nbt.getInstance().getType(nbt).getId());
+			} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+					| SecurityException exception) {
+				exception.printStackTrace();
+			}
+		}
+		original.add(index, nbt);
 	}
 }
