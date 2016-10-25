@@ -26,16 +26,6 @@ public class Attribute {
 		return compound;
 	}
 	
-<<<<<<< HEAD
-=======
-    
-    	public UUID getId() {
-    		long most = data.getLong("UUIDMost", 0);
-    		long least = data.getLong("UUIDLeast", 0);
-    		return new UUID(most, least);
-    	}
-	
->>>>>>> 2b35dc9b1939bf7fe52ccd81140ae7a5489d08ac
 	
 	public AttributeBuilder getBuilder() {
 		return builder;
