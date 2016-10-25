@@ -1,4 +1,4 @@
-package com.projectkorra.items.attributes;
+	package com.projectkorra.items.attributes;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -33,21 +33,19 @@ public class Attributes {
 	}
    
 	
-    public Iterable<Attribute> values() {
-        return new Iterable<Attribute>() {
+   	public Iterable<Attribute> values() {
+      		return new Iterable<Attribute>() {
         	
-            @Override
-            public Iterator<Attribute> iterator() {
-                return Iterators.transform(attributes.iterator(), 
-                  new Function<Object, Attribute>() {
-             
-                    public Attribute apply( Object element) {
-                        return new Attribute(null, (NbtCompound) element);
-                    }
-                });
-            }
-        };
-    }
+           		@Override
+           		public Iterator<Attribute> iterator() {
+                		return Iterators.transform(attributes.iterator(), new Function<Object, Attribute>() {
+                    			public Attribute apply( Object element) {
+                        			return new Attribute(null, (NbtCompound) element);
+                    			}
+                		});
+            		}
+      	  	};
+   	 }
     
     
     public boolean remove(Attribute attribute) {
