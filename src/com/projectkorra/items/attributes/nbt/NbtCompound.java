@@ -11,7 +11,7 @@ import com.projectkorra.items.attributes.nbt.util.ConvertedMap;
 public final class NbtCompound extends ConvertedMap {
 
 	public NbtCompound(Object handle) {
-		super(handle, Nbt.getInstance().getDataMap(handle));
+		super(handle, NbtFactory.getInstance().getDataMap(handle));
 	}
 	
 	
@@ -24,7 +24,7 @@ public final class NbtCompound extends ConvertedMap {
 		NbtList list = (NbtList) get(key);
 		if (list == null) {
 			if (createNew) {	
-				put(key, list = Nbt.createList());
+				put(key, list = NbtFactory.createList());
 			}
 		}
 		
@@ -41,7 +41,7 @@ public final class NbtCompound extends ConvertedMap {
 
             if (child == null) {
                 if (createNew) {
-                    current.put(entry, child = Nbt.createCompound());
+                    current.put(entry, child = NbtFactory.createCompound());
                 }    
             }    
             current = child;

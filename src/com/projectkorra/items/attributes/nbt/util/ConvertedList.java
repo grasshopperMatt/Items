@@ -3,7 +3,7 @@ package com.projectkorra.items.attributes.nbt.util;
 import java.util.AbstractList;
 import java.util.List;
 
-import com.projectkorra.items.attributes.nbt.Nbt;
+import com.projectkorra.items.attributes.nbt.NbtFactory;
 import com.projectkorra.projectkorra.util.ReflectionHandler;
 
 public class ConvertedList extends AbstractList<Object> implements Wrapper {
@@ -13,9 +13,9 @@ public class ConvertedList extends AbstractList<Object> implements Wrapper {
 	
 
 	public ConvertedList(Object handle, List<Object> original) {
-		if (Nbt.getInstance().NBT_LIST_TYPE == null) {
+		if (NbtFactory.getInstance().nbtListType == null) {
 			try {
-				Nbt.getInstance().NBT_LIST_TYPE = ReflectionHandler.getField(handle.getClass(), true, "type");
+				NbtFactory.getInstance().nbtListType = ReflectionHandler.getField(handle.getClass(), true, "type");
 			} catch (NoSuchFieldException | SecurityException exception) {
 				exception.printStackTrace();
 			}
@@ -71,7 +71,7 @@ public class ConvertedList extends AbstractList<Object> implements Wrapper {
 		
 		if (size() == 0) {
 			try {
-				ReflectionHandler.setValue(handle, true, Nbt.getInstance().NBT_LIST_TYPE.toString(), Nbt.getInstance().getType(nbt).getId());
+				ReflectionHandler.setValue(handle, true, NbtFactory.getInstance().nbtListType.toString(), NbtFactory.getInstance().getType(nbt).getId());
 			} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
 					| SecurityException exception) {
 				exception.printStackTrace();

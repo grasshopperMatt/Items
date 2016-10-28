@@ -29,12 +29,14 @@ public class AttributeStorage {
 	
 	private Attribute getAttribute(Attributes instance) {
 		for (Attribute attribute : instance.values()) {
-			String attributeId = attribute.getCompound().getString("id", null);
+			long most = attribute.getCompound().getLong("UUIDMost", 0);
+			long least = attribute.getCompound().getLong("UUIDLeast", 0);
 			
-			if (UUID.fromString(attributeId) == uuid) {
+			if (new UUID(most, least) == uuid) {
 				return attribute;
 			}
 		}
+		
 		return null;
 	}
 	
@@ -49,7 +51,7 @@ public class AttributeStorage {
 		Attributes attributes = new Attributes(target); 
 		
 		if (getAttribute(attributes) == null) {
-			attributes.getAttributes().add(getAttribute(attributes).newBuilder()
+			attributes.getAttributes().add(Attribute.newBuilder()
 			.name(data).amount(0).uuid(uuid).operation(Operation.ADD_NUMBER).type(AttributeType.GENERIC_ATTACK_DAMAGE).build()
 			);
 		} else {

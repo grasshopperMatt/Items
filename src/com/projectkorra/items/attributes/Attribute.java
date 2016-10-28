@@ -11,11 +11,12 @@ public class Attribute {
 	
 	
 	public Attribute(AttributeBuilder builder, NbtCompound compound) {
-		compound.put("name", builder.name);
-		compound.put("id", builder.uuid);
-		compound.put("amount", builder.amount);
-		compound.put("operation", builder.operation);
-		compound.put("type", builder.type);
+		compound.put("Name", builder.name);
+		compound.put("Amount", builder.amount);
+		compound.put("Operation", builder.operation);
+		compound.put("AttributeType", builder.type);
+		compound.put("UUIDMost", builder.uuid.getMostSignificantBits());
+		compound.put("UUIDLeast", builder.uuid.getLeastSignificantBits());
 		
 		this.compound = compound;
 		this.builder = builder;
@@ -32,7 +33,7 @@ public class Attribute {
 	}
  
     
-	public AttributeBuilder newBuilder() {
+	public static AttributeBuilder newBuilder() {
 		return new AttributeBuilder();
 	}
 	

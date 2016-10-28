@@ -1,14 +1,13 @@
-	package com.projectkorra.items.attributes;
+package com.projectkorra.items.attributes;
 
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
-import com.projectkorra.items.attributes.nbt.Nbt;
+import com.projectkorra.items.attributes.nbt.NbtFactory;
 import com.projectkorra.items.attributes.nbt.NbtCompound;
 import com.projectkorra.items.attributes.nbt.NbtList;
 
@@ -18,8 +17,8 @@ public class Attributes {
 	
 	
 	public Attributes(ItemStack item) {
-		this.item = Nbt.getCraftItemStack(item);
-		this.attributes = Nbt.fromTag(item).getList("AttributeModifiers", true);		
+		this.item = NbtFactory.getCraftItemStack(item);
+		this.attributes = NbtFactory.fromTag(item).getList("AttributeModifiers", true);		
 	}
 	
 	
@@ -39,7 +38,9 @@ public class Attributes {
            		@Override
            		public Iterator<Attribute> iterator() {
                 		return Iterators.transform(attributes.iterator(), new Function<Object, Attribute>() {
-                    			public Attribute apply( Object element) {
+                			
+                			@Override
+                    			public Attribute apply(Object element) {
                         			return new Attribute(null, (NbtCompound) element);
                     			}
                 		});
@@ -49,12 +50,17 @@ public class Attributes {
     
     
     public boolean remove(Attribute attribute) {
-    	String uuidString = attribute.getCompound().getString("id", null);
-    	UUID uuid = UUID.fromString(uuidString);
+    	long most = attribute.getCompound().getLong("UUIDMost", 0);
+    	long least = attribute.getCompound().getLong("UUIDLeast", 0);
+    	UUID id = new UUID(most, least);
     	
-        for (Iterator<Attribute> it = values().iterator(); it.hasNext();) {
-            if (Objects.equals(it.next().getCompound().getString("id", null), uuid)) {
-                it.remove();
+        for (Iterator<Attribute> iterator = values().iterator(); iterator.hasNext();) {
+        	long iMost = attribute.getCompound().getLong("UUIDMost", 0);
+        	long iLeast = attribute.getCompound().getLong("UUIDLeast", 0);
+        	UUID iId = new UUID(iMost, iLeast);
+        	
+            if (iId == id) {
+                iterator.remove();
                 return true;
             }
         } 

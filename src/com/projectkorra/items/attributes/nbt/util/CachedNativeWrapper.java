@@ -3,14 +3,14 @@ package com.projectkorra.items.attributes.nbt.util;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.MapMaker;
-import com.projectkorra.items.attributes.nbt.Nbt;
+import com.projectkorra.items.attributes.nbt.NbtFactory;
 
 public final class CachedNativeWrapper {
 	private final ConcurrentMap<Object, Object> cache = new MapMaker().weakKeys().makeMap();
 	
 	
 	public Object unwrap(String name, Object value) {
-		return Nbt.getInstance().unwrapValue(name, value);
+		return NbtFactory.getInstance().unwrapValue(name, value);
 	}
 	
 	
@@ -18,8 +18,10 @@ public final class CachedNativeWrapper {
 		Object current = cache.get(value);
 		
 		if (current == null) {
-			current = Nbt.getInstance().wrapNative(value);
-			cache.put(value, current);
+			current = NbtFactory.getInstance().wrapNative(value);
+			if (current != null) {
+				cache.put(value, current);
+			}
 		}
 		
 		return current;
