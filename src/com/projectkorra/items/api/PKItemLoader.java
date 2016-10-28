@@ -1,82 +1,150 @@
 package com.projectkorra.items.api;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import com.projectkorra.items.ProjectKorraItems;
+import com.projectkorra.items.attributes.nbt.NbtFactory;
 
 public class PKItemLoader {
-	public File directory;
-	private File[] files;
-
-	public PKItemLoader(File file) {
-		directory = file;
-		files = directory.listFiles();
-		
-		load();
+	private File directory;
+	
+	
+	public PKItemLoader(File directory) {
+		this.directory = directory;
 	}
-
-	public void load() {
-		List<JSONObject> objects = new ArrayList<JSONObject>();
+	
+	
+	public String readFile(File file) {
+		String configString = "";
+		BufferedReader reader = null;
 
 		try {
-			for (File file : files) {
-
-				objects.add(readFile(file));
-			}
-
-		} catch (IOException | ParseException exception) {
-			
+			reader = new BufferedReader(new FileReader(file.getPath()));
+		} catch (FileNotFoundException exception) {
 			exception.printStackTrace();
 		}
-		
-		for (JSONObject object : objects) {
-			ItemStack item = ProjectKorraItems.getInstance().createItemStack(object);
+
+		try {
+			StringBuilder builder = new StringBuilder();
+			String line = reader.readLine();
+
+			while (line != null) {
+				builder.append(line);
+				builder.append("\n");
+				line = reader.readLine();
+			}
 			
-			try {
-				HashMap<Object, Object> values = ProjectKorraItems.getInstance().itemReader.values(item);
-				@SuppressWarnings("unused")
-				String name = (String)values.get("name");
-				
-				//ProjectKorraItems.getInstance().itemManager.itemData.put(name, values);
-				
-			} catch (ParseException exception) {
-				
-				exception.printStackTrace();
+			configString = builder.toString();
+		} catch (IOException exception) {
+			exception.printStackTrace();
+			return configString;
+		}
+
+		try {
+			reader.close();
+		} catch (IOException exception) {
+			exception.printStackTrace();
+			return configString;
+		}
+
+		return configString;
+	}
+	
+
+	public ItemStack analyzeFile(String configString) {
+		final HashMap<String, Object> abilityData = new HashMap<String, Object>();
+		String materialString = null;
+		List<String> abilityString = null;
+
+		String[] splitString = configString.split("\n");
+		for (String l : splitString) {
+			l = l.trim();
+
+			if (l.length() == 0) {
+				continue;
+			}
+
+			if (l.startsWith("material:")) {
+				materialString = l.substring("material:".length(), l.length());
+			}
+			
+			else if (l.startsWith("abilities:")) {
+				abilityString = splitString(l.substring("abilities:".length(), l.length()), ",");
+			}
+
+			else {
+				abilityData.putAll(readAbilityString(abilityString, l));
 			}
 		}
+		
+		Material material = Material.matchMaterial(materialString);
+		return NbtFactory.getCraftItemStack(new ItemStack(material));
 	}
-
-	public void writeFile(JSONObject object) throws IOException {
-		String name = (String) object.get("name");
-		FileWriter writer = null;
-
-		for (File file : files) {
-			if (file.getName() != name) {
-
-				writer = new FileWriter(directory + "/" + name);
-				writer.write(object.toJSONString());
-				writer.close();
+	
+	
+	private HashMap<String, Object> readAbilityString(List<String> abilityString, String line) {
+		HashMap<String, Object> data = new HashMap<String, Object>();
+		
+		for (String a : (List<String>) abilityString) {
+			if (line.startsWith(a)) {
+				String key = "";
+				String value = "";
+				
+				for (String s : line.split(":")) {
+					if (s.startsWith(a)) {
+						key = s;
+					}
+					
+					else {
+						value = s;
+					}
+				}
+				
+				data.put(key, value);
 			}
 		}
+		return data;
 	}
-
-	public JSONObject readFile(File file) throws FileNotFoundException, IOException, ParseException {
-		JSONParser parser = new JSONParser();
-		JSONObject object = (JSONObject) parser.parse(new FileReader(file));
-
-		return object;
+	
+	
+	private List<String> splitString(String string, String divider) {
+		final List<String> strings = new ArrayList<String>();
+		
+		for (String s : string.split(divider)) {
+			strings.add(s);
+		}
+		
+		return strings;
 	}
-
+	
+	
+	public List<String> readFiles() {
+		final List<String> readFiles = new ArrayList<String>();
+		
+		for (File f : directory.listFiles()) {
+			readFiles.add(readFile(f));
+		}
+		
+		return readFiles;
+	}
+	
+	
+	public List<ItemStack> analyzeFiles(List<String> readFiles) {
+		final List<ItemStack> analyzedFiles = new ArrayList<ItemStack>();
+		
+		for (String f : readFiles) {
+			analyzedFiles.add(analyzeFile(f));
+		}
+		
+		return analyzedFiles;
+	}
 }

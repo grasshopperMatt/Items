@@ -1,6 +1,8 @@
 package com.projectkorra.items;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -9,11 +11,22 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class PKItemReader {
+public class Temp {
 	
-	public PKItemReader() {
-		
+	public void write(ItemStack item, JSONObject object) {
+
+		if (item.getType() == Material.AIR)
+			return;
+
+		ItemMeta itemMeta = item.getItemMeta();
+
+		List<String> lore = new ArrayList<String>();
+		lore.add(object.toJSONString());
+
+		itemMeta.setLore(lore);
+		item.setItemMeta(itemMeta);
 	}
+	
 	
 	public HashMap<Object, Object> values(ItemStack item) throws ParseException {
 		JSONObject object = read(item);
@@ -27,6 +40,7 @@ public class PKItemReader {
 		}
 		return json;
 	}
+	
 	
 	public JSONObject read(ItemStack item) throws ParseException {
 		
