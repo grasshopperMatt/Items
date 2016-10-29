@@ -41,15 +41,13 @@ public class NbtFactory {
 		
 		
 		private final int id;
-		private NbtFactory nbt;
 		
 
-		private NbtType(int uniqueId, Class<?> type) {
-			id = uniqueId;
+		private NbtType(int id, Class<?> type) {
+			this.id = id;
 			
-			nbt = NbtFactory.getInstance();
-			nbt.nbtClass.put(id, type);
-			nbt.nbtEnum.put(id, this);
+			getInstance().nbtClass.put(id, type);
+			getInstance().nbtEnum.put(id, this);
 		}
 		
 
@@ -72,12 +70,9 @@ public class NbtFactory {
 	
 
 	private NbtFactory() {
-		String offlinePlayer = "org.bukkit.craftbukkit.v1_10_R1.CraftOfflinePlayer";
-		String itemStack = "org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack";
-		
+		final String offlinePlayer = "org.bukkit.craftbukkit.v1_10_R1.CraftOfflinePlayer";
+		final String itemStack = "org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack";
 		try {
-			
-			//Initialization
 			
 			compoundClass = getClass().getClassLoader().loadClass(offlinePlayer).getDeclaredMethod("getData").getReturnType();
 			baseClass = compoundClass.getSuperclass();
@@ -88,8 +83,6 @@ public class NbtFactory {
 			craftItem = getClass().getClassLoader().loadClass(itemStack);
 			craftItemHandle = ReflectionHandler.getField(craftItem, true, "handle");
 			craftItemTag = craftItemHandle.getType().getDeclaredField("tag");
-			
-			//Make Private Methods accessible
 			
 			nbtGetType.setAccessible(true);
 			nbtCreateTag.setAccessible(true);
@@ -225,7 +218,8 @@ public class NbtFactory {
 		checkItemStack(stack);
 		Object nms = null;
 
-		try {			
+		try {
+			
 			nms = ReflectionHandler.getValue(stack, true, getInstance().craftItemHandle.getName());
 			ReflectionHandler.setValue(nms, true, getInstance().craftItemTag.getName(), compound.getHandle());
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException
@@ -251,6 +245,7 @@ public class NbtFactory {
 		Object nms, tag = null;
 
 		try {
+			
 			nms = ReflectionHandler.getValue(stack, true, getInstance().craftItemHandle.getName());
 			tag = ReflectionHandler.getValue(nms, true, getInstance().craftItemTag.getName());
 		} catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException exception) {
@@ -281,12 +276,12 @@ public class NbtFactory {
 		}
 		
 		try {
+			
 			Constructor<?> caller = instance.craftItem.getDeclaredConstructor(ItemStack.class);
 			caller.setAccessible(true);
 			
 			return (ItemStack) caller.newInstance(stack);
 		} catch (Exception e) {
-			
 			throw new IllegalStateException("Unable to convert " + stack + " + to a CraftItemStack.");
 		}
 	}
@@ -407,7 +402,9 @@ public class NbtFactory {
 		Object tag = null;
 
 		try {
+			
 			tag = nbtCreateTag.invoke(null, (byte)type.id);	
+			
 			if (value != null) {
 				ReflectionHandler.setValue(tag, true, ReflectionHandler.getField(tag.getClass(), true, type.getFieldName()).getName(), value);
 			}			
@@ -428,8 +425,8 @@ public class NbtFactory {
 
 	public NbtType getType(Object nms) {
 		int type = 0;
-
 		try {
+			
 			type = (Byte) ReflectionHandler.invokeMethod(nms, nbtGetType.getName());
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException exception) {

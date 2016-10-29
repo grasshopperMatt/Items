@@ -30,23 +30,6 @@ public class Attributes {
 	public NbtList getAttributes() {
 		return attributes;
 	}
-   
-	
-   	public Iterable<Attribute> values() {
-      		return new Iterable<Attribute>() {
-        	
-           		@Override
-           		public Iterator<Attribute> iterator() {
-                		return Iterators.transform(attributes.iterator(), new Function<Object, Attribute>() {
-                			
-                			@Override
-                    			public Attribute apply(Object element) {
-                        			return new Attribute(null, (NbtCompound) element);
-                    			}
-                		});
-            		}
-      	  	};
-   	 }
     
     
     public boolean remove(Attribute attribute) {
@@ -55,8 +38,8 @@ public class Attributes {
     	UUID id = new UUID(most, least);
     	
         for (Iterator<Attribute> iterator = values().iterator(); iterator.hasNext();) {
-        	long iMost = attribute.getCompound().getLong("UUIDMost", 0);
-        	long iLeast = attribute.getCompound().getLong("UUIDLeast", 0);
+        	long iMost = iterator.next().getCompound().getLong("UUIDMost", 0);
+        	long iLeast = iterator.next().getCompound().getLong("UUIDLeast", 0);
         	UUID iId = new UUID(iMost, iLeast);
         	
             if (iId == id) {
@@ -68,6 +51,23 @@ public class Attributes {
         return false;
     }
     
+    
+   	public Iterable<Attribute> values() {
+  		return new Iterable<Attribute>() {
+    	
+       		@Override
+       		public Iterator<Attribute> iterator() {
+            		return Iterators.transform(attributes.iterator(), new Function<Object, Attribute>() {
+            			
+            			@Override
+                			public Attribute apply(Object element) {
+                    			return new Attribute(null, (NbtCompound) element);
+                			}
+            		});
+        		}
+  	  	};
+	 }
+   	
     
 	public enum Operation {
 		ADD_NUMBER(0), MULTIPLY_PERCENTAGE(1), ADD_PERCENTAGE(2);
