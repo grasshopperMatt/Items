@@ -36,8 +36,8 @@ public class ProjectKorraItems extends JavaPlugin {
 		HashMap<String, Method> watermanipulationInformation = new HashMap<String, Method>();
 		
 		try {
-			earthblastInformation.put("damage", EarthBlast.class.getDeclaredMethod("setDamage", double.class));
-			watermanipulationInformation.put("damage", WaterManipulation.class.getDeclaredMethod("setDamage", double.class));
+			earthblastInformation.put("earthblast.damage", EarthBlast.class.getDeclaredMethod("setDamage", double.class));
+			watermanipulationInformation.put("watermanipulation.damage", WaterManipulation.class.getDeclaredMethod("setDamage", double.class));
 		} 
 		
 		catch (NoSuchMethodException | SecurityException exception) {

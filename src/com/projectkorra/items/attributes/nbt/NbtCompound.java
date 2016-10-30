@@ -1,11 +1,7 @@
 package com.projectkorra.items.attributes.nbt;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.projectkorra.items.attributes.nbt.util.ConvertedMap;
 
 public final class NbtCompound extends ConvertedMap {
@@ -43,29 +39,6 @@ public final class NbtCompound extends ConvertedMap {
         }
         
         return current;
-    }
-    
-    
-    @SuppressWarnings("unchecked")
-    public <T> T getPath(String path) {
-        List<String> entries = getPathElements(path);
-        NbtCompound map = getMap(entries.subList(0, entries.size() - 1).toString(), false);     
-
-        if (map != null) {
-            return (T) map.get(entries.get(entries.size() - 1));
-        }
-
-        return null;
-    }  
-    
-    
-    public NbtCompound putPath(String path, Object value) {
-        List<String> entries = getPathElements(path);
-        
-        Map<String, Object> map = getMap(entries.subList(0, entries.size() - 1).toString(), true);
-        map.put(entries.get(entries.size() - 1), value);
-        
-        return this;
     }
     
 
@@ -148,10 +121,4 @@ public final class NbtCompound extends ConvertedMap {
 
 		return defaultValue;
 	}
-	
-	
-	
-    private List<String> getPathElements(String path) {
-        return Lists.newArrayList(Splitter.on(".").omitEmptyStrings().split(path));
-    }
 }
