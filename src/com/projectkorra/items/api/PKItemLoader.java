@@ -12,14 +12,24 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import com.projectkorra.items.attributes.nbt.NbtFactory;
+import com.projectkorra.items.attributes.nbt.NbtHandler;
 
 public class PKItemLoader {
+	private static PKItemLoader instance;
 	private File directory;
 	
 	
 	public PKItemLoader(File directory) {
 		this.directory = directory;
+	}
+	
+	
+	public static PKItemLoader getInstance(File directory) {
+		if (instance == null) {
+			instance = new PKItemLoader(directory);
+		}
+		
+		return instance;
 	}
 	
 	
@@ -87,7 +97,7 @@ public class PKItemLoader {
 		}
 		
 		Material material = Material.matchMaterial(materialString);
-		return NbtFactory.getCraftItemStack(new ItemStack(material));
+		return NbtHandler.getCraftItemStack(new ItemStack(material));
 	}
 	
 	

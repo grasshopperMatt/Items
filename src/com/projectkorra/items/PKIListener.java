@@ -12,29 +12,23 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.projectkorra.items.attributes.nbt.NbtCompound;
-import com.projectkorra.items.attributes.nbt.NbtFactory;
+import com.projectkorra.items.attributes.nbt.NbtHandler;
 import com.projectkorra.projectkorra.ability.Ability;
 import com.projectkorra.projectkorra.event.AbilityStartEvent;
 
 public class PKIListener implements Listener {
-	private ProjectKorraItems instance;
-	
-	
-	public PKIListener() {
-		this.instance = ProjectKorraItems.getInstance();
-	}
 	
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		ItemStack item = NbtFactory.getCraftItemStack(new ItemStack(Material.DIAMOND_SWORD));
+		ItemStack item = NbtHandler.getCraftItemStack(new ItemStack(Material.DIAMOND_SWORD));
 		Player player = event.getPlayer();
 		
-		NbtCompound compound = NbtFactory.createCompound();
+		NbtCompound compound = NbtHandler.newCompound();
 		compound.put("earthblast.damage", 50);
 		compound.put("earthblast.speed", 2);
 	
-		NbtFactory.setTag(item, compound);
+		NbtHandler.setTag(item, compound);
 		player.getInventory().addItem(item);
 	}
 	
@@ -44,8 +38,8 @@ public class PKIListener implements Listener {
 		Ability ability = event.getAbility();
 		Player player = ability.getPlayer();
 		
-		HashMap<String, Method> data = instance.data.get(ability.getName().toLowerCase());
-		if (data == null || data.isEmpty()) {
+		HashMap<String, Method> data = ProjectKorraItems.getInstance().getData(ability.getName().toLowerCase());
+		if (data == null) {
 			return;
 		}
 		
@@ -54,7 +48,7 @@ public class PKIListener implements Listener {
 			return;
 		}
 		
-		NbtCompound compound = NbtFactory.fromTag(item);
+		NbtCompound compound = NbtHandler.fromTag(item);
 		for (String s : compound.keySet()) {
 			if (compound.get(s) != null) {
 				try {

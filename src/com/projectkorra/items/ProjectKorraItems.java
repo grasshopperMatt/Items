@@ -2,12 +2,8 @@ package com.projectkorra.items;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.projectkorra.items.api.PKItemLoader;
@@ -15,65 +11,55 @@ import com.projectkorra.projectkorra.earthbending.EarthBlast;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
 
 public class ProjectKorraItems extends JavaPlugin {	
-	private static ProjectKorraItems instance;
+	private static ProjectKorraItems pluginInstance;
+	public static final String nmsVersion = "V1_10_R1";
 	
-
-	public PKItemLoader itemLoader;
-	public HashMap<String, HashMap<String, Method>> data = new HashMap<String, HashMap<String, Method>>(); 
+	private HashMap<String, HashMap<String, Method>> data = new HashMap<String, HashMap<String, Method>>(); 
+	
+	
+	public static ProjectKorraItems getInstance() {
+		return pluginInstance;
+	}
+	
+	
+	public HashMap<String, Method> getData(String ability) {
+		return data.get(ability);
+	}
 	
 	
 	@Override
 	public void onEnable() {
-		instance = this;
+		pluginInstance = this;
 		
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdir();			
 		}
 		
-		// FOR TEST
-		
-		HashMap<String, Method> earthblastInformation = new HashMap<String, Method>();
-		HashMap<String, Method> watermanipulationInformation = new HashMap<String, Method>();
+		HashMap<String, Method> earthblast = new HashMap<String, Method>();
+		HashMap<String, Method> watermanipulation = new HashMap<String, Method>();
 		
 		try {
-			earthblastInformation.put("earthblast.damage", EarthBlast.class.getDeclaredMethod("setDamage", double.class));
-			watermanipulationInformation.put("watermanipulation.damage", WaterManipulation.class.getDeclaredMethod("setDamage", double.class));
+			earthblast.put("earthblast.damage", EarthBlast.class.getDeclaredMethod("setDamage", double.class));
+			earthblast.put("earthblast.speed", EarthBlast.class.getDeclaredMethod("setSpeed", double.class));
+			
+			watermanipulation.put("watermanipulation.damage", WaterManipulation.class.getDeclaredMethod("setDamage", double.class));
+			watermanipulation.put("watermanipulation.speed", WaterManipulation.class.getDeclaredMethod("setSpeed", double.class));
 		} 
 		
 		catch (NoSuchMethodException | SecurityException exception) {
 			exception.printStackTrace();
 		}
 		
-		data.put("earthblast", earthblastInformation);
-		data.put("watermanipulation", watermanipulationInformation);
+		data.put("earthblast", earthblast);
+		data.put("watermanipulation", watermanipulation);
 		
-		// FOR TEST
-		
-		this.itemLoader = new PKItemLoader(new File(this.getDataFolder() + "/extensions"));
-		
-		final PluginManager pluginManager = getServer().getPluginManager();
-		pluginManager.registerEvents(new PKIListener(), this);
+		PKItemLoader.getInstance(new File(this.getDataFolder() + "/extensions"));
+		getServer().getPluginManager().registerEvents(new PKIListener(), this);
 	}
 	
 	
 	@Override
 	public void onDisable() {
-		instance = null;
-	}
-	
-	
-	public List<ItemStack> getYmlItems() {
-		final List<ItemStack> loaded = new ArrayList<ItemStack>();
-		
-		for (ItemStack i : itemLoader.analyzeFiles(itemLoader.readFiles())) {
-			loaded.add(i);
-		}
-		
-		return loaded;
-	}
-	
-	
-	public static ProjectKorraItems getInstance() {
-		return instance;
+		pluginInstance = null;
 	}
 }

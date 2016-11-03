@@ -7,39 +7,8 @@ import com.projectkorra.items.attributes.nbt.util.ConvertedMap;
 public final class NbtCompound extends ConvertedMap {
 
 	public NbtCompound(Object handle) {
-		super(handle, NbtFactory.getInstance().getDataMap(handle));
+		super(handle, NbtHandler.getDataMap(handle));
 	}
-    
-    
-	public NbtList getList(String key, boolean createNew) {
-		NbtList list = (NbtList) get(key);
-		if (list == null) {
-			if (createNew) {	
-				put(key, list = NbtFactory.createList());
-			}
-		}
-		
-		return list;
-	}
-	
-
-    public NbtCompound getMap(String name, boolean createNew) {
-    	Iterable<String> path = Arrays.asList(name);
-        NbtCompound current = this;
-
-        for (String entry : path) {
-            NbtCompound child = (NbtCompound) current.get(entry);
-
-            if (child == null) {
-                if (createNew) {
-                    current.put(entry, child = NbtFactory.createCompound());
-                }    
-            }    
-            current = child;
-        }
-        
-        return current;
-    }
     
 
 	public Byte getByte(String key, byte defaultValue) {
@@ -121,4 +90,35 @@ public final class NbtCompound extends ConvertedMap {
 
 		return defaultValue;
 	}
+	
+	
+	public NbtList getList(String key, boolean createNew) {
+		NbtList list = (NbtList) get(key);
+		if (list == null) {
+			if (createNew) {	
+				put(key, list = NbtHandler.newList());
+			}
+		}
+		
+		return list;
+	}
+	
+
+    public NbtCompound getMap(String name, boolean createNew) {
+    	Iterable<String> path = Arrays.asList(name);
+        NbtCompound current = this;
+
+        for (String entry : path) {
+            NbtCompound child = (NbtCompound) current.get(entry);
+
+            if (child == null) {
+                if (createNew) {
+                    current.put(entry, child = NbtHandler.newCompound());
+                }    
+            }    
+            current = child;
+        }
+        
+        return current;
+    }
 }
