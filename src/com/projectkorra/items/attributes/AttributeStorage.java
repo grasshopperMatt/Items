@@ -29,8 +29,8 @@ public class AttributeStorage {
 	
 	private Attribute getAttribute(Attributes instance) {
 		for (Attribute attribute : instance.values()) {
-			long most = attribute.getCompound().getLong("UUIDMost", 0);
-			long least = attribute.getCompound().getLong("UUIDLeast", 0);
+			long most = (Long) attribute.getCompound().get("UUIDMost");
+			long least = (Long) attribute.getCompound().get("UUIDLeast");
 			
 			if (new UUID(most, least) == uuid) {
 				return attribute;
@@ -43,7 +43,7 @@ public class AttributeStorage {
 	
 	public String getData() {
 		Attribute attribute = getAttribute(new Attributes(target));
-		return attribute != null ? attribute.getCompound().getString("name", null) : null;
+		return attribute != null ? (String) attribute.getCompound().get("name") : null;
 	}
 	
 	

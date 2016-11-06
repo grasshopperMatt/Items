@@ -1,18 +1,15 @@
 package com.projectkorra.items;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.projectkorra.items.api.PKItemLoader;
 import com.projectkorra.projectkorra.earthbending.EarthBlast;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
 
 public class ProjectKorraItems extends JavaPlugin {	
 	private static ProjectKorraItems pluginInstance;
-	public static final String nmsVersion = "V1_10_R1";
 	
 	private HashMap<String, HashMap<String, Method>> data = new HashMap<String, HashMap<String, Method>>(); 
 	
@@ -30,7 +27,7 @@ public class ProjectKorraItems extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		pluginInstance = this;
-		
+			
 		if (!getDataFolder().exists()) {
 			getDataFolder().mkdir();			
 		}
@@ -53,7 +50,7 @@ public class ProjectKorraItems extends JavaPlugin {
 		data.put("earthblast", earthblast);
 		data.put("watermanipulation", watermanipulation);
 		
-		PKItemLoader.getInstance(new File(this.getDataFolder() + "/extensions"));
+		//new PKItemLoader(new File(this.getDataFolder() + "/extensions"));
 		getServer().getPluginManager().registerEvents(new PKIListener(), this);
 	}
 	

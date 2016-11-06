@@ -1,119 +1,43 @@
 package com.projectkorra.items.attributes.nbt;
 
 import java.util.Arrays;
+import java.util.Map;
 
+import com.projectkorra.items.attributes.nbt.NBTHandler.Type;
 import com.projectkorra.items.attributes.nbt.util.ConvertedMap;
+import com.projectkorra.projectkorra.util.ReflectionHandler;
 
-public final class NbtCompound extends ConvertedMap {
+public final class NBTCompound extends ConvertedMap {
 
-	public NbtCompound(Object handle) {
-		super(handle, NbtHandler.getDataMap(handle));
+	public NBTCompound(Object handle) {
+		super(handle, getDataMap(handle));
 	}
-    
+	
 
-	public Byte getByte(String key, byte defaultValue) {
-		if (containsKey(key)) {
-			return (Byte) get(key);
+	@SuppressWarnings("unchecked")
+	private static Map<String, Object> getDataMap(Object handle) {
+		try {
+			return (Map<String, Object>) ReflectionHandler.getValue(handle, true, Type.TAG_COMPOUND.getName());
 		}
 
-		return defaultValue;
-	}
-	
-
-	public Short getShort(String key, short defaultValue) {
-		if (containsKey(key)) {
-			return (Short) get(key);
+		catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException exception) {
+			exception.printStackTrace();
 		}
 
-		return defaultValue;
-	}
-	
-
-	public Long getLong(String key, long defaultValue) {
-		if (containsKey(key)) {
-			return (Long) get(key);
-		}
-
-		return defaultValue;
-	}
-	
-
-	public Integer getInteger(String key, int defaultValue) {
-		if (containsKey(key)) {
-			return (Integer) get(key);
-		}
-
-		return defaultValue;
-	}
-	
-
-	public Float getFloat(String key, float defaultValue) {
-		if (containsKey(key)) {
-			return (Float) get(key);
-		}
-
-		return defaultValue;
-	}
-	
-
-	public Double getDouble(String key, double defaultValue) {
-		if (containsKey(key)) {
-			return (Double) get(key);
-		}
-
-		return defaultValue;
-	}
-	
-
-	public String getString(String key, String defaultValue) {
-		if (containsKey(key)) {
-			return (String) get(key);
-		}
-
-		return defaultValue;
-	}
-	
-
-	public Byte[] getByteArray(String key, Byte[] defaultValue) {
-		if (containsKey(key)) {
-			return (Byte[]) get(key);
-		}
-
-		return defaultValue;
-	}
-	
-
-	public Integer[] getIntegerArray(String key, Integer[] defaultValue) {
-		if (containsKey(key)) {
-			return (Integer[]) get(key);
-		}
-
-		return defaultValue;
+		return null;
 	}
 	
 	
-	public NbtList getList(String key, boolean createNew) {
-		NbtList list = (NbtList) get(key);
-		if (list == null) {
-			if (createNew) {	
-				put(key, list = NbtHandler.newList());
-			}
-		}
-		
-		return list;
-	}
-	
-
-    public NbtCompound getMap(String name, boolean createNew) {
-    	Iterable<String> path = Arrays.asList(name);
-        NbtCompound current = this;
+    public NBTCompound getMap(String key, boolean createNew) {
+    	Iterable<String> path = Arrays.asList(key);
+        NBTCompound current = this;
 
         for (String entry : path) {
-            NbtCompound child = (NbtCompound) current.get(entry);
+            NBTCompound child = (NBTCompound) current.get(entry);
 
             if (child == null) {
                 if (createNew) {
-                    current.put(entry, child = NbtHandler.newCompound());
+                    current.put(entry, child = NBTHandler.newCompound());
                 }    
             }    
             current = child;
@@ -121,4 +45,16 @@ public final class NbtCompound extends ConvertedMap {
         
         return current;
     }
+    
+
+	public NBTList getList(String key, boolean createNew) {
+		NBTList list = (NBTList) get(key);
+		if (list == null) {
+			if (createNew) {	
+				put(key, list = NBTHandler.newList());
+			}
+		}
+		
+		return list;
+	}
 }

@@ -1,116 +1,87 @@
 package com.projectkorra.items.api;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import com.projectkorra.items.attributes.nbt.NbtHandler;
+import com.projectkorra.items.attributes.nbt.NBTCompound;
+import com.projectkorra.items.attributes.nbt.NBTHandler;
 
-public class PKItemLoader {
-	private static PKItemLoader instance;
-	private File directory;
+public class PKItemLoader extends PKLoader {
 	
 	
-	public PKItemLoader(File directory) {
-		this.directory = directory;
-	}
-	
-	
-	public static PKItemLoader getInstance(File directory) {
-		if (instance == null) {
-			instance = new PKItemLoader(directory);
+	public PKItemLoader(File file) {
+		List<String> loaded = new ArrayList<String>();
+		
+		for (File f : file.listFiles()) {
+			loaded.add(read(f));
 		}
 		
-		return instance;
-	}
-	
-	
-	public String readFile(File file) {
-		String configString = "";
-		BufferedReader reader = null;
-
-		try {
-			reader = new BufferedReader(new FileReader(file.getPath()));
-		} catch (FileNotFoundException exception) {
-			exception.printStackTrace();
+		for (String s : loaded) {
+			ItemStack i = (ItemStack)analyze(s);
+			Bukkit.broadcastMessage(NBTHandler.fromTag(i).toString());
 		}
-
-		try {
-			StringBuilder builder = new StringBuilder();
-			String line = reader.readLine();
-
-			while (line != null) {
-				builder.append(line);
-				builder.append("\n");
-				line = reader.readLine();
-			}
-			
-			configString = builder.toString();
-		} catch (IOException exception) {
-			exception.printStackTrace();
-			return configString;
-		}
-
-		try {
-			reader.close();
-		} catch (IOException exception) {
-			exception.printStackTrace();
-			return configString;
-		}
-
-		return configString;
+		
+		
+		//TODO: CHECK DIRECTORY, LOAD ALL FILES
 	}
 	
 
-	public ItemStack analyzeFile(String configString) {
-		final HashMap<String, Object> abilityData = new HashMap<String, Object>();
-		String materialString = null;
-		List<String> abilityString = null;
-
-		String[] splitString = configString.split("\n");
+	@Override @SuppressWarnings("unchecked")
+	public Object analyze(String string) {
+		Map<String, Object> data = new HashMap<String, Object>();
+		
+		String[] splitString = string.split("\n");
 		for (String l : splitString) {
 			l = l.trim();
-
+			
 			if (l.length() == 0) {
 				continue;
 			}
-
-			if (l.startsWith("material:")) {
-				materialString = l.substring("material:".length(), l.length());
+			
+			else if (l.startsWith("material")) {
+				data.put("material", l.substring("material".length(), l.length()));
 			}
 			
-			else if (l.startsWith("abilities:")) {
-				abilityString = splitString(l.substring("abilities:".length(), l.length()), ",");
+			else if (l.startsWith("reference")) {
+				data.put("reference", Arrays.asList(l.substring("reference".length(), l.length()).split(",")));
+				Bukkit.broadcastMessage(data.get("reference").toString());
 			}
-
+			
 			else {
-				abilityData.putAll(readAbilityString(abilityString, l));
+				readDataLine((List<String>) data.get("reference"), l);
 			}
 		}
 		
-		Material material = Material.matchMaterial(materialString);
-		return NbtHandler.getCraftItemStack(new ItemStack(material));
+		ItemStack item = NBTHandler.getCraftItem(new ItemStack(Material.matchMaterial((String) data.get("material"))));
+		data.remove("material");
+		data.remove("reference");
+		
+		NBTCompound compound = NBTHandler.newCompound();
+		compound.putAll(data);
+		NBTHandler.setTag(item, compound);
+		
+		return item;
 	}
 	
 	
-	private HashMap<String, Object> readAbilityString(List<String> abilityString, String line) {
-		HashMap<String, Object> data = new HashMap<String, Object>();
+	private HashMap<String, Object> readDataLine(List<String> string, String line) {
+		final Map<String, Object> data = new HashMap<String, Object>();
 		
-		for (String a : (List<String>) abilityString) {
-			if (line.startsWith(a)) {
+		for (String r : (List<String>) string) {
+			if (line.startsWith(r)) {
 				String key = "";
 				String value = "";
 				
 				for (String s : line.split(":")) {
-					if (s.startsWith(a)) {
+					if (s.startsWith(r)) {
 						key = s;
 					}
 					
@@ -122,39 +93,6 @@ public class PKItemLoader {
 				data.put(key, value);
 			}
 		}
-		return data;
-	}
-	
-	
-	private List<String> splitString(String string, String divider) {
-		final List<String> strings = new ArrayList<String>();
-		
-		for (String s : string.split(divider)) {
-			strings.add(s);
-		}
-		
-		return strings;
-	}
-	
-	
-	public List<String> readFiles() {
-		final List<String> readFiles = new ArrayList<String>();
-		
-		for (File f : directory.listFiles()) {
-			readFiles.add(readFile(f));
-		}
-		
-		return readFiles;
-	}
-	
-	
-	public List<ItemStack> analyzeFiles(List<String> readFiles) {
-		final List<ItemStack> analyzedFiles = new ArrayList<ItemStack>();
-		
-		for (String f : readFiles) {
-			analyzedFiles.add(analyzeFile(f));
-		}
-		
-		return analyzedFiles;
+		return (HashMap<String, Object>) data;
 	}
 }

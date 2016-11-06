@@ -3,14 +3,14 @@ package com.projectkorra.items.attributes;
 import java.util.UUID;
 
 import com.projectkorra.items.attributes.Attributes.Operation;
-import com.projectkorra.items.attributes.nbt.NbtCompound;
+import com.projectkorra.items.attributes.nbt.NBTCompound;
 
 public class Attribute {
-	private NbtCompound compound;
+	private NBTCompound compound;
 	private AttributeBuilder builder;
 	
 	
-	public Attribute(AttributeBuilder builder, NbtCompound compound) {
+	public Attribute(AttributeBuilder builder, NBTCompound compound) {
 		compound.put("Name", builder.name);
 		compound.put("Amount", builder.amount);
 		compound.put("Operation", builder.operation);
@@ -23,7 +23,7 @@ public class Attribute {
 	}
 	
 	
-	public NbtCompound getCompound() {
+	public NBTCompound getCompound() {
 		return compound;
 	}
 	

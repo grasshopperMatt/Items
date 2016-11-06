@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,8 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.projectkorra.items.attributes.nbt.NbtCompound;
-import com.projectkorra.items.attributes.nbt.NbtHandler;
+import com.projectkorra.items.attributes.nbt.NBTCompound;
+import com.projectkorra.items.attributes.nbt.NBTHandler;
 import com.projectkorra.projectkorra.ability.Ability;
 import com.projectkorra.projectkorra.event.AbilityStartEvent;
 
@@ -21,15 +22,15 @@ public class PKIListener implements Listener {
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		ItemStack item = NbtHandler.getCraftItemStack(new ItemStack(Material.DIAMOND_SWORD));
+	ItemStack item = NBTHandler.getCraftItem(new ItemStack(Material.DIAMOND_SWORD));
 		Player player = event.getPlayer();
 		
-		NbtCompound compound = NbtHandler.newCompound();
+		NBTCompound compound = NBTHandler.newCompound();
 		compound.put("earthblast.damage", 50);
 		compound.put("earthblast.speed", 2);
 	
-		NbtHandler.setTag(item, compound);
-		player.getInventory().addItem(item);
+		NBTHandler.setTag(item, compound);
+		player.getInventory().addItem(item.clone());
 	}
 	
 	
@@ -48,8 +49,9 @@ public class PKIListener implements Listener {
 			return;
 		}
 		
-		NbtCompound compound = NbtHandler.fromTag(item);
+		NBTCompound compound = NBTHandler.fromTag(item);
 		for (String s : compound.keySet()) {
+			Bukkit.broadcastMessage(s);
 			if (compound.get(s) != null) {
 				try {
 					if (!data.containsKey(s)) {

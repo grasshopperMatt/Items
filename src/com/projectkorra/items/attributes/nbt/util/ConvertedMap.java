@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class ConvertedMap extends AbstractMap<String, Object> implements NbtWrapper {
+	private final CachedNativeWrapper cache = new CachedNativeWrapper();
 	private final Object handle;
 	private final Map<String, Object> original;
-	private final CachedNativeWrapper cache = new CachedNativeWrapper();
 	
 
-	public ConvertedMap(Object handle, Map<String, Object> original) {
+	public ConvertedMap(Object handle, Map<String, Object> original) {		
 		this.handle = handle;
 		this.original = original;
 	}
@@ -26,8 +26,22 @@ public class ConvertedMap extends AbstractMap<String, Object> implements NbtWrap
 	
 	@Override
 	public Object put(String key, Object value) {
-		return wrap(original.put((String) key, unwrap((String) key, value)));
+		return wrap(original.put(key, unwrap(key, value)));
 	}
+	
+	//public Object put(String key, Object value) {
+		//Object o = unwrap(key, value);
+		
+		//original.put(key, o);
+		//Object oo = original.get(key);
+		//Bukkit.broadcastMessage(original.toString());
+		
+		//Object wr = wrap(key + oo);
+		
+		//Bukkit.broadcastMessage(wr.toString());
+		
+		//return wr;
+	//}
 	
 	
 	@Override

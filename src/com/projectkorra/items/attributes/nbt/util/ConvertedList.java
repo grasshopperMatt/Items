@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.AbstractList;
 import java.util.List;
 
-import com.projectkorra.items.attributes.nbt.NbtHandler;
+import com.projectkorra.items.attributes.nbt.NBTHandler;
 import com.projectkorra.projectkorra.util.ReflectionHandler;
 
 public class ConvertedList extends AbstractList<Object> implements NbtWrapper {
@@ -34,7 +34,7 @@ public class ConvertedList extends AbstractList<Object> implements NbtWrapper {
 
 		if (size() == 0) {
 			try {
-				ReflectionHandler.setValue(handle, true, nbtListType.getName(), NbtHandler.getType(nbt).getId());
+				ReflectionHandler.setValue(handle, true, nbtListType.getName(), NBTHandler.getType(nbt).getId());
 			} 
 			
 			catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException exception) {

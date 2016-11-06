@@ -3,7 +3,7 @@ package com.projectkorra.items.attributes.nbt.util;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.MapMaker;
-import com.projectkorra.items.attributes.nbt.NbtHandler;
+import com.projectkorra.items.attributes.nbt.NBTHandler;
 
 public final class CachedNativeWrapper {
 	private final ConcurrentMap<Object, Object> cache = new MapMaker().weakKeys().makeMap();
@@ -13,9 +13,9 @@ public final class CachedNativeWrapper {
 		Object current = cache.get(value);
 		
 		if (current == null) {
-			current = NbtHandler.wrapNative(value);
+			current = NBTHandler.wrapNative(value);
 			
-			if (current != null) {
+			if (current instanceof ConvertedMap || current instanceof ConvertedList) {
 				cache.put(value, current);
 			}
 		}
@@ -25,6 +25,6 @@ public final class CachedNativeWrapper {
 	
 	
 	public Object unwrap(String name, Object value) {
-		return NbtHandler.unwrapValue(name, value);
+		return NBTHandler.unwrapValue(name, value);
 	}
 }
