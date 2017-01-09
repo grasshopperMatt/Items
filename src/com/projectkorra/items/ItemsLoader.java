@@ -1,7 +1,6 @@
 package com.projectkorra.items;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -59,27 +58,27 @@ public class ItemsLoader {
 		//	e.printStackTrace();
 		//}
 		
-		File t = new File(recipeFolder, "t.yml");
-		FileConfiguration conf = YamlConfiguration.loadConfiguration(t);
+		//File t = new File(recipeFolder, "t.yml");
+		//FileConfiguration conf = YamlConfiguration.loadConfiguration(t);
 		
-		conf.set("ShapedRecipe.CraftingTable.tX", "DIAMOND");
-		conf.set("ShapedRecipe.CraftingTable.tY", "DIAMOND");
-		conf.set("ShapedRecipe.CraftingTable.tZ", "DIAMOND");
+		//conf.set("ShapedRecipe.CraftingTable.tX", "DIAMOND");
+		//conf.set("ShapedRecipe.CraftingTable.tY", "DIAMOND");
+		//conf.set("ShapedRecipe.CraftingTable.tZ", "DIAMOND");
 		
-		conf.set("ShapedRecipe.CraftingTable.mX", "DIAMOND");
-		conf.set("ShapedRecipe.CraftingTable.mY", "DIAMOND");
-		conf.set("ShapedRecipe.CraftingTable.mZ", "DIAMOND");
+		//conf.set("ShapedRecipe.CraftingTable.mX", "DIAMOND");
+		//conf.set("ShapedRecipe.CraftingTable.mY", "DIAMOND");
+		//conf.set("ShapedRecipe.CraftingTable.mZ", "DIAMOND");
 		
-		conf.set("ShapedRecipe.CraftingTable.bX", "DIAMOND");
-		conf.set("ShapedRecipe.CraftingTable.bY", "DIAMOND");
+		//conf.set("ShapedRecipe.CraftingTable.bX", "DIAMOND");
+		//conf.set("ShapedRecipe.CraftingTable.bY", "DIAMOND");
 		
-		conf.set("ShapedRecipe.CraftingTable.Item", "GRASS");
+		//conf.set("ShapedRecipe.CraftingTable.Item", "GRASS");
 		
-		try {
-			conf.save(t);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		//try {
+		//	conf.save(t);
+		//} catch (IOException e) {
+		//	e.printStackTrace();
+		//}
 		
 		for (File f : itemsFolder.listFiles()) {
 			ItemStack item = loadItem(YamlConfiguration.loadConfiguration(f));
