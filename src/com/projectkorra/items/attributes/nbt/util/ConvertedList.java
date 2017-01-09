@@ -7,26 +7,17 @@ import java.util.List;
 import com.projectkorra.items.attributes.nbt.NBTHandler;
 import com.projectkorra.projectkorra.util.ReflectionHandler;
 
-public class ConvertedList extends AbstractList<Object> implements NbtWrapper {
-	private final CachedNativeWrapper cache = new CachedNativeWrapper();
+public class ConvertedList extends AbstractList<Object> implements Wrapper {
+	private final WrapperCache cache = new WrapperCache();
 	private final Object handle;
 	private final List<Object> original;
-	
 	private static Field nbtListType;
 	
 
 	public ConvertedList(Object handle, List<Object> original) {
 		this.handle = handle;
 		this.original = original;
-		try {
-			nbtListType = ReflectionHandler.getField(handle.getClass(), true, "type");
-		} 
-		
-		catch (NoSuchFieldException | SecurityException exception) {
-			exception.printStackTrace();
-		}
-	}
-	
+	}	
 	
 	@Override
 	public void add(int index, Object element) {
@@ -34,7 +25,11 @@ public class ConvertedList extends AbstractList<Object> implements NbtWrapper {
 
 		if (size() == 0) {
 			try {
-				ReflectionHandler.setValue(handle, true, nbtListType.getName(), NBTHandler.getType(nbt).getId());
+				if (nbtListType == null) {
+					nbtListType = ReflectionHandler.getField(handle.getClass(), true, "type");
+				}
+				
+				ReflectionHandler.setValue(handle, true, nbtListType.getName(), (byte) NBTHandler.getType(nbt).getId());
 			} 
 			
 			catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException exception) {

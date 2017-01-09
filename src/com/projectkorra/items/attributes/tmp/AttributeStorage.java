@@ -1,10 +1,10 @@
-package com.projectkorra.items.attributes;
+package com.projectkorra.items.attributes.tmp;
 
 import java.util.UUID;
 
 import org.bukkit.inventory.ItemStack;
 
-import com.projectkorra.items.attributes.Attributes.Operation;
+import com.projectkorra.items.attributes.tmp.Attributes.Operation;
 
 public class AttributeStorage {
 	private ItemStack target;

@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.HashBiMap;
 import com.google.common.primitives.Primitives;
-import com.projectkorra.items.attributes.nbt.util.NbtWrapper;
+import com.projectkorra.items.attributes.nbt.util.Wrapper;
 import com.projectkorra.projectkorra.util.ReflectionHandler;
 
 public class NBTHandler {
@@ -121,6 +121,16 @@ public class NBTHandler {
 
 	public static NBTList newList() {
 		return new NBTList(createTag(Type.TAG_LIST, null));
+	}
+	
+	public static NBTList newList(Object... content) {
+		NBTList list = new NBTList(createTag(Type.TAG_LIST, null));
+		int num = 0;
+		for (Object o : content) {
+			list.add(num, o);
+			num++;
+		}
+		return list;
 	}
 
 	/**
@@ -247,7 +257,7 @@ public class NBTHandler {
 	 * @return The CraftItemStack version.
 	 */
 
-	public static ItemStack getCraftItem(ItemStack item) {
+	public static ItemStack getItem(ItemStack item) {
 		if (item.getType() == Material.AIR) {
 			return item;
 		}
@@ -311,8 +321,8 @@ public class NBTHandler {
 			return null;
 		}
 
-		else if (value instanceof NbtWrapper) {
-			return ((NbtWrapper) value).getHandle();
+		else if (value instanceof Wrapper) {
+			return ((Wrapper) value).getHandle();
 		}
 
 		else if (value instanceof List) {

@@ -1,4 +1,4 @@
-package com.projectkorra.items.attributes;
+package com.projectkorra.items.attributes.tmp;
 
 import java.util.concurrent.ConcurrentMap;
 

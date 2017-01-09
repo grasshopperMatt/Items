@@ -1,9 +1,9 @@
-package com.projectkorra.items.attributes;
+package com.projectkorra.items.attributes.tmp;
 
 import java.util.UUID;
 
-import com.projectkorra.items.attributes.Attributes.Operation;
 import com.projectkorra.items.attributes.nbt.NBTCompound;
+import com.projectkorra.items.attributes.tmp.Attributes.Operation;
 
 public class Attribute {
 	private NBTCompound compound;

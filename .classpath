@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="C:/Users/Matthew/Documents/My Games/Minecraft/Server/spigot-1.10.2.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Matthew/Documents/My Games/Minecraft/Server/plugins/ProjectKorra.jar"/>
+	<classpathentry kind="lib" path="C:/Users/grass/Downloads/Documents/Minecraft Server/Minecraft 1.10.2 Pre-Made Server - Normal Combat/Minecraft 1.10.2 Pre-Made Server - Normal Combat/Spigot.jar"/>
+	<classpathentry kind="lib" path="C:/Users/grass/Downloads/Documents/Minecraft Server/Minecraft 1.10.2 Pre-Made Server - Normal Combat/Minecraft 1.10.2 Pre-Made Server - Normal Combat/plugins/ProjectKorra.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

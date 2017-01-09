@@ -1,4 +1,4 @@
-package com.projectkorra.items.attributes;
+package com.projectkorra.items.attributes.tmp;
 
 import java.util.Iterator;
 import java.util.UUID;
@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
-import com.projectkorra.items.attributes.nbt.NBTHandler;
 import com.projectkorra.items.attributes.nbt.NBTCompound;
+import com.projectkorra.items.attributes.nbt.NBTHandler;
 import com.projectkorra.items.attributes.nbt.NBTList;
 
 public class Attributes {
@@ -17,7 +17,7 @@ public class Attributes {
 	
 	
 	public Attributes(ItemStack item) {
-		this.item = NBTHandler.getCraftItem(item);
+		this.item = NBTHandler.getItem(item);
 		attributes = NBTHandler.fromTag(item).getList("AttributeModifiers", true);		
 	}
 	

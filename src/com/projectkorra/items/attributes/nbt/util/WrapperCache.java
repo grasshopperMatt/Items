@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentMap;
 import com.google.common.collect.MapMaker;
 import com.projectkorra.items.attributes.nbt.NBTHandler;
 
-public final class CachedNativeWrapper {
+public final class WrapperCache {
 	private final ConcurrentMap<Object, Object> cache = new MapMaker().weakKeys().makeMap();
 	
 	

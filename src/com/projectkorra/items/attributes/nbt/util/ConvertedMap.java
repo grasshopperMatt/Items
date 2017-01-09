@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class ConvertedMap extends AbstractMap<String, Object> implements NbtWrapper {
-	private final CachedNativeWrapper cache = new CachedNativeWrapper();
+public class ConvertedMap extends AbstractMap<String, Object> implements Wrapper {
+	private final WrapperCache cache = new WrapperCache();
 	private final Object handle;
 	private final Map<String, Object> original;
 	
